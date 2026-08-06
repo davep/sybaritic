@@ -1,0 +1,24 @@
+[project]
+name = "sybaritic"
+version = "0.1.0"
+description = "Async Spartan protocol client library"
+readme = "README.md"
+authors = [
+    { name = "Dave Pearson", email = "davep@davep.org" }
+]
+requires-python = ">=3.12"
+dependencies = []
+
+[project.scripts]
+sybaritic = "sybaritic.cli:main"
+
+[build-system]
+requires = ["uv_build>=0.12.2,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
+]
+
