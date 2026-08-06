@@ -8,8 +8,12 @@ class SybariticError(Exception):
     """Base exception for all sybaritic errors."""
 
 
-class InvalidURIError(SybariticError, ValueError):
-    """Raised when a Spartan URI is invalid or malformed."""
+class URIError(SybariticError, ValueError):
+    """Raised when a Spartan URI is invalid, unparseable, or has an invalid scheme."""
+
+
+# Alias for backward compatibility
+InvalidURIError = URIError
 
 
 class SybariticConnectionError(SybariticError):

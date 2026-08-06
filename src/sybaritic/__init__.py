@@ -17,6 +17,7 @@ from sybaritic.exceptions import (
     SybariticConnectionError,
     SybariticError,
     TooManyRedirectsError,
+    URIError,
 )
 from sybaritic.response import Response
 from sybaritic.status import Status
@@ -42,5 +43,7 @@ __all__ = [
     "SybariticConnectionError",
     "SybariticError",
     "TooManyRedirectsError",
+    "URIError",
     "__version__",
 ]
+
