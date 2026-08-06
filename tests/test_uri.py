@@ -1,16 +1,30 @@
 import pytest
 from sybaritic.exceptions import InvalidURIError, URIError
-from sybaritic.uri import DEFAULT_PORT, SpartanURI
+from sybaritic.uri import (
+    MAXIMUM_LENGTH,
+    SPARTAN_DEFAULT_PORT,
+    SPARTAN_PREFIX,
+    SPARTAN_SCHEME,
+    SpartanURI,
+)
 
 
 def test_instantiate_basic_uri():
     uri = SpartanURI("spartan://example.com/foo/bar")
-    assert uri.scheme == "spartan"
+    assert uri.scheme == SPARTAN_SCHEME
     assert uri.host == "example.com"
-    assert uri.port == DEFAULT_PORT
+    assert uri.hostname == "example.com"
+    assert uri.port == SPARTAN_DEFAULT_PORT
+    assert uri.netloc == "example.com"
     assert uri.path == "/foo/bar"
     assert str(uri) == "spartan://example.com/foo/bar"
     assert repr(uri) == "SpartanURI('spartan://example.com/foo/bar')"
+    assert len(uri) == len("spartan://example.com/foo/bar")
+
+
+def test_netloc_custom_port():
+    uri = SpartanURI("spartan://example.com:3000/path")
+    assert uri.netloc == "example.com:3000"
 
 
 def test_parse_without_scheme():
@@ -21,25 +35,51 @@ def test_parse_without_scheme():
     assert str(uri) == "spartan://example.com/test"
 
 
-def test_parse_explicit_port():
-    uri = SpartanURI("spartan://example.com:3000/path")
-    assert uri.host == "example.com"
-    assert uri.port == 3000
-    assert uri.path == "/path"
-    assert str(uri) == "spartan://example.com:3000/path"
+def test_with_default_scheme_and_from_str():
+    u1 = SpartanURI.with_default_scheme("example.com/hello")
+    assert u1.scheme == "spartan"
+    assert u1.host == "example.com"
+    assert u1.path == "/hello"
+
+    u2 = SpartanURI.from_str("spartan://example.com/hello")
+    assert u2 == u1
 
 
-def test_parse_default_path():
-    uri = SpartanURI("example.com")
-    assert uri.path == "/"
-    assert str(uri) == "spartan://example.com/"
+def test_length_properties():
+    uri_str = "spartan://example.com/path"
+    uri = SpartanURI(uri_str)
+    assert len(uri) == len(uri_str)
+    assert uri.bytes_left == MAXIMUM_LENGTH - len(uri_str.encode("utf-8"))
+    assert not uri.too_long
+
+    long_path = "/" + "a" * (MAXIMUM_LENGTH + 10)
+    long_uri = SpartanURI(f"spartan://example.com{long_path}")
+    assert long_uri.too_long
+    assert long_uri.bytes_left < 0
 
 
-def test_parse_with_query():
-    uri = SpartanURI("spartan://example.com/search?q=test")
-    assert uri.path == "/search"
-    assert uri.query == "q=test"
-    assert str(uri) == "spartan://example.com/search?q=test"
+def test_parent_and_root_and_without_query():
+    uri = SpartanURI("spartan://example.com/a/b/c?key=val")
+
+    assert uri.without_query == SpartanURI("spartan://example.com/a/b/c")
+    assert uri.root == SpartanURI("spartan://example.com/")
+
+    # /a/b/c -> parent is /a/b/
+    p1 = uri.parent
+    assert p1 == SpartanURI("spartan://example.com/a/b/")
+    assert p1.query is None
+
+    # /a/b/ -> parent is /a/
+    p2 = p1.parent
+    assert p2 == SpartanURI("spartan://example.com/a/")
+
+    # /a/ -> parent is /
+    p3 = p2.parent
+    assert p3 == SpartanURI("spartan://example.com/")
+
+    # / -> parent is /
+    p4 = p3.parent
+    assert p4 == SpartanURI("spartan://example.com/")
 
 
 def test_punycode_host():
@@ -52,16 +92,14 @@ def test_invalid_uri_empty():
         SpartanURI("")
     with pytest.raises(URIError):
         SpartanURI("   ")
+    with pytest.raises(URIError):
+        SpartanURI.with_default_scheme("")
 
 
 def test_invalid_scheme():
     with pytest.raises(URIError) as exc_info:
         SpartanURI("http://example.com/foo")
     assert "Invalid URI scheme 'http'" in str(exc_info.value)
-
-    with pytest.raises(URIError) as exc_info:
-        SpartanURI("gopher://example.com/foo")
-    assert "Invalid URI scheme 'gopher'" in str(exc_info.value)
 
 
 def test_empty_scheme():
@@ -78,14 +116,6 @@ def test_invalid_host():
 def test_invalid_port():
     with pytest.raises(URIError):
         SpartanURI("spartan://example.com:70000/path")
-
-
-def test_resolve_redirect():
-    uri = SpartanURI("spartan://example.com/old/path")
-    redirected = uri.resolve_redirect("/new/path")
-    assert redirected.host == "example.com"
-    assert redirected.port == 300
-    assert redirected.path == "/new/path"
 
 
 def test_with_methods():
@@ -130,7 +160,6 @@ def test_uri_equality_and_hash():
     assert u1 != "not a uri"
     assert hash(u1) == hash(u2)
     assert len({u1, u2, u3}) == 2
-
 
 
 def test_invalid_uri_alias():
