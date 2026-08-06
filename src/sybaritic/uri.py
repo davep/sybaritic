@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Final, Self
+from typing import Final
 from urllib.parse import urlparse
 
 from sybaritic.exceptions import URIError
@@ -89,7 +89,9 @@ class SpartanURI:
 
             parsed = urlparse(to_parse)
 
-            extracted_scheme = parsed.scheme.lower() if parsed.scheme else SPARTAN_SCHEME
+            extracted_scheme = (
+                parsed.scheme.lower() if parsed.scheme else SPARTAN_SCHEME
+            )
             if extracted_scheme != SPARTAN_SCHEME:
                 raise URIError(
                     f"Invalid URI scheme '{extracted_scheme}', expected '{SPARTAN_SCHEME}'"
@@ -108,10 +110,16 @@ class SpartanURI:
             self._port = (
                 port
                 if port is not None
-                else (extracted_port if extracted_port is not None else SPARTAN_DEFAULT_PORT)
+                else (
+                    extracted_port
+                    if extracted_port is not None
+                    else SPARTAN_DEFAULT_PORT
+                )
             )
 
-            raw_path = path if path is not None else (parsed.path if parsed.path else "/")
+            raw_path = (
+                path if path is not None else (parsed.path if parsed.path else "/")
+            )
             if not raw_path.startswith("/"):
                 raw_path = f"/{raw_path}"
             self._path = raw_path
@@ -165,7 +173,9 @@ class SpartanURI:
         try:
             return self._host.encode("idna").decode("ascii")
         except UnicodeError as exc:
-            raise URIError(f"Failed to convert host '{self._host}' to punycode") from exc
+            raise URIError(
+                f"Failed to convert host '{self._host}' to punycode"
+            ) from exc
 
     @property
     def bytes_left(self) -> int:
@@ -244,11 +254,12 @@ class SpartanURI:
         if not target_path.startswith("/"):
             target_path = f"/{target_path}"
 
-        if new_query:
-            if "?" not in target_path:
-                target_path = f"{target_path}?{new_query}"
+        if new_query and "?" not in target_path:
+            target_path = f"{target_path}?{new_query}"
 
-        host_port = new_host if new_port == SPARTAN_DEFAULT_PORT else f"{new_host}:{new_port}"
+        host_port = (
+            new_host if new_port == SPARTAN_DEFAULT_PORT else f"{new_host}:{new_port}"
+        )
         return SpartanURI(f"{SPARTAN_PREFIX}{host_port}{target_path}")
 
     def with_host(self, host: str) -> SpartanURI:
@@ -276,9 +287,9 @@ class SpartanURI:
 
     def __str__(self) -> str:
         path_str = self._path
-        if self._query:
-            if "?" not in path_str:
-                path_str = f"{path_str}?{self._query}"
+        if self._query and "?" not in path_str:
+            path_str = f"{path_str}?{self._query}"
+
         if self._port == SPARTAN_DEFAULT_PORT:
             return f"{self._scheme}://{self._host}{path_str}"
         return f"{self._scheme}://{self._host}:{self._port}{path_str}"

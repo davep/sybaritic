@@ -1,4 +1,5 @@
 import pytest
+
 from sybaritic.exceptions import ClientError, ServerError
 from sybaritic.response import Response
 from sybaritic.status import Status
@@ -6,11 +7,11 @@ from sybaritic.uri import SpartanURI
 
 
 @pytest.fixture
-def base_uri():
+def base_uri() -> SpartanURI:
     return SpartanURI.parse("spartan://example.com/test")
 
 
-def test_success_response(base_uri):
+def test_success_response(base_uri: SpartanURI) -> None:
     resp = Response(
         uri=base_uri,
         status=Status.SUCCESS,
@@ -32,7 +33,7 @@ def test_success_response(base_uri):
     resp.raise_for_status()
 
 
-def test_redirect_history_response():
+def test_redirect_history_response() -> None:
     req_uri = SpartanURI("spartan://example.com/initial")
     final_uri = SpartanURI("spartan://example.com/final")
 
@@ -57,7 +58,7 @@ def test_redirect_history_response():
     assert final_resp.history[0] == redirect_resp
 
 
-def test_client_error_response(base_uri):
+def test_client_error_response(base_uri: SpartanURI) -> None:
     resp = Response(
         uri=base_uri,
         status=Status.CLIENT_ERROR,
@@ -72,7 +73,7 @@ def test_client_error_response(base_uri):
     assert "Resource not found" in str(exc_info.value)
 
 
-def test_server_error_response(base_uri):
+def test_server_error_response(base_uri: SpartanURI) -> None:
     resp = Response(
         uri=base_uri,
         status=Status.SERVER_ERROR,
@@ -86,7 +87,7 @@ def test_server_error_response(base_uri):
     assert exc_info.value.response is resp
 
 
-def test_text_decoding_fallback(base_uri):
+def test_text_decoding_fallback(base_uri: SpartanURI) -> None:
     resp = Response(
         uri=base_uri,
         status=Status.SUCCESS,

@@ -9,7 +9,7 @@ class SybariticError(Exception):
 
 
 class URIError(SybariticError, ValueError):
-    """Raised when a Spartan URI is invalid, unparseable, or has an invalid scheme."""
+    """Raised when a Spartan URI is invalid, unparsable, or has an invalid scheme."""
 
 
 # Alias for backward compatibility

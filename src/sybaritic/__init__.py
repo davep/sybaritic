@@ -46,8 +46,8 @@ __all__ = [
     "RedirectError",
     "RedirectLoopError",
     "RequestError",
-    "ResponseError",
     "Response",
+    "ResponseError",
     "ServerError",
     "SpartanURI",
     "Status",
@@ -61,6 +61,3 @@ __all__ = [
     "post",
     "request",
 ]
-
-
-

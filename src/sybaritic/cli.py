@@ -3,13 +3,12 @@ from __future__ import annotations
 import argparse
 import asyncio
 import sys
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Sequence
 
 from sybaritic import __version__
 from sybaritic.client import Client
 from sybaritic.exceptions import SybariticError
-from sybaritic.status import Status
 from sybaritic.uri import DEFAULT_PORT, SpartanURI
 
 
@@ -97,7 +96,7 @@ async def run_cli(args: argparse.Namespace) -> int:
         uri = SpartanURI.with_default_scheme(args.url)
         if args.port is not None:
             uri = uri.with_port(args.port)
-    except Exception as exc:
+    except (SybariticError, ValueError) as exc:
         print(f"sybaritic: error: invalid URI '{args.url}': {exc}", file=sys.stderr)
         return 1
 
@@ -106,7 +105,9 @@ async def run_cli(args: argparse.Namespace) -> int:
         try:
             payload = args.file.read_bytes()
         except OSError as exc:
-            print(f"sybaritic: error reading file '{args.file}': {exc}", file=sys.stderr)
+            print(
+                f"sybaritic: error reading file '{args.file}': {exc}", file=sys.stderr
+            )
             return 1
     elif args.data is not None:
         payload = args.data.encode("utf-8")
@@ -132,9 +133,15 @@ async def run_cli(args: argparse.Namespace) -> int:
 
         if args.verbose:
             if response.is_redirected:
-                print(f"Redirect history ({len(response.history)} step(s)):", file=sys.stderr)
+                print(
+                    f"Redirect history ({len(response.history)} step(s)):",
+                    file=sys.stderr,
+                )
                 for idx, step in enumerate(response.history, 1):
-                    print(f"  {idx}. {step.status.value} {step.status.name} -> {step.redirect_path}", file=sys.stderr)
+                    print(
+                        f"  {idx}. {step.status.value} {step.status.name} -> {step.redirect_path}",
+                        file=sys.stderr,
+                    )
             print(
                 f"Final Response: {response.status.value} {response.status.name} (meta='{response.meta}')",
                 file=sys.stderr,
@@ -165,7 +172,7 @@ async def run_cli(args: argparse.Namespace) -> int:
     except SybariticError as exc:
         print(f"sybaritic: error: {exc}", file=sys.stderr)
         return 1
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001
         print(f"sybaritic: unexpected error: {exc}", file=sys.stderr)
         return 1
 

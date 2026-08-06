@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Optional
 
 from sybaritic.exceptions import ClientError, ServerError
 from sybaritic.status import Status
@@ -95,12 +94,12 @@ class Response:
             return self.content.decode("utf-8", errors="replace")
 
     @property
-    def redirect_path(self) -> Optional[str]:
+    def redirect_path(self) -> str | None:
         """Return the target redirect path if status is 3, otherwise None."""
         return self.meta if self.is_redirect else None
 
     @property
-    def error_message(self) -> Optional[str]:
+    def error_message(self) -> str | None:
         """Return the error message if status is 4 or 5, otherwise None."""
         return self.meta if self.is_error else None
 

@@ -1,15 +1,15 @@
 import pytest
+
 from sybaritic.exceptions import InvalidURIError, URIError
 from sybaritic.uri import (
     MAXIMUM_LENGTH,
     SPARTAN_DEFAULT_PORT,
-    SPARTAN_PREFIX,
     SPARTAN_SCHEME,
     SpartanURI,
 )
 
 
-def test_instantiate_basic_uri():
+def test_instantiate_basic_uri() -> None:
     uri = SpartanURI("spartan://example.com/foo/bar")
     assert uri.scheme == SPARTAN_SCHEME
     assert uri.host == "example.com"
@@ -22,12 +22,12 @@ def test_instantiate_basic_uri():
     assert len(uri) == len("spartan://example.com/foo/bar")
 
 
-def test_netloc_custom_port():
+def test_netloc_custom_port() -> None:
     uri = SpartanURI("spartan://example.com:3000/path")
     assert uri.netloc == "example.com:3000"
 
 
-def test_parse_without_scheme():
+def test_parse_without_scheme() -> None:
     uri = SpartanURI("example.com/test")
     assert uri.host == "example.com"
     assert uri.port == 300
@@ -35,7 +35,7 @@ def test_parse_without_scheme():
     assert str(uri) == "spartan://example.com/test"
 
 
-def test_with_default_scheme_and_from_str():
+def test_with_default_scheme_and_from_str() -> None:
     u1 = SpartanURI.with_default_scheme("example.com/hello")
     assert u1.scheme == "spartan"
     assert u1.host == "example.com"
@@ -45,7 +45,7 @@ def test_with_default_scheme_and_from_str():
     assert u2 == u1
 
 
-def test_length_properties():
+def test_length_properties() -> None:
     uri_str = "spartan://example.com/path"
     uri = SpartanURI(uri_str)
     assert len(uri) == len(uri_str)
@@ -58,36 +58,32 @@ def test_length_properties():
     assert long_uri.bytes_left < 0
 
 
-def test_parent_and_root_and_without_query():
+def test_parent_and_root_and_without_query() -> None:
     uri = SpartanURI("spartan://example.com/a/b/c?key=val")
 
     assert uri.without_query == SpartanURI("spartan://example.com/a/b/c")
     assert uri.root == SpartanURI("spartan://example.com/")
 
-    # /a/b/c -> parent is /a/b/
     p1 = uri.parent
     assert p1 == SpartanURI("spartan://example.com/a/b/")
     assert p1.query is None
 
-    # /a/b/ -> parent is /a/
     p2 = p1.parent
     assert p2 == SpartanURI("spartan://example.com/a/")
 
-    # /a/ -> parent is /
     p3 = p2.parent
     assert p3 == SpartanURI("spartan://example.com/")
 
-    # / -> parent is /
     p4 = p3.parent
     assert p4 == SpartanURI("spartan://example.com/")
 
 
-def test_punycode_host():
+def test_punycode_host() -> None:
     uri = SpartanURI("spartan://münchen.de/path")
     assert uri.punycode_host == "xn--mnchen-3ya.de"
 
 
-def test_invalid_uri_empty():
+def test_invalid_uri_empty() -> None:
     with pytest.raises(URIError):
         SpartanURI("")
     with pytest.raises(URIError):
@@ -96,29 +92,29 @@ def test_invalid_uri_empty():
         SpartanURI.with_default_scheme("")
 
 
-def test_invalid_scheme():
+def test_invalid_scheme() -> None:
     with pytest.raises(URIError) as exc_info:
         SpartanURI("http://example.com/foo")
     assert "Invalid URI scheme 'http'" in str(exc_info.value)
 
 
-def test_empty_scheme():
+def test_empty_scheme() -> None:
     with pytest.raises(URIError) as exc_info:
         SpartanURI("://example.com/foo")
     assert "URI scheme cannot be empty" in str(exc_info.value)
 
 
-def test_invalid_host():
+def test_invalid_host() -> None:
     with pytest.raises(URIError):
         SpartanURI("spartan://")
 
 
-def test_invalid_port():
+def test_invalid_port() -> None:
     with pytest.raises(URIError):
         SpartanURI("spartan://example.com:70000/path")
 
 
-def test_with_methods():
+def test_with_methods() -> None:
     uri = SpartanURI("spartan://example.com:3000/old/path?q=1")
 
     h_uri = uri.with_host("newdomain.org")
@@ -141,7 +137,7 @@ def test_with_methods():
     assert str(no_q_uri) == "spartan://example.com:3000/old/path"
 
 
-def test_replace_method():
+def test_replace_method() -> None:
     uri = SpartanURI("spartan://example.com/foo")
     replaced = uri.replace(host="other.org", port=3000, path="/bar", query="search=1")
     assert replaced.host == "other.org"
@@ -151,7 +147,7 @@ def test_replace_method():
     assert str(replaced) == "spartan://other.org:3000/bar?search=1"
 
 
-def test_uri_equality_and_hash():
+def test_uri_equality_and_hash() -> None:
     u1 = SpartanURI("spartan://example.com/foo")
     u2 = SpartanURI.parse("spartan://example.com/foo")
     u3 = SpartanURI("spartan://example.com/bar")
@@ -162,5 +158,5 @@ def test_uri_equality_and_hash():
     assert len({u1, u2, u3}) == 2
 
 
-def test_invalid_uri_alias():
+def test_invalid_uri_alias() -> None:
     assert issubclass(InvalidURIError, URIError)

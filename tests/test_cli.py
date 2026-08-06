@@ -1,9 +1,11 @@
 import asyncio
+
 import pytest
-from sybaritic.cli import main, parse_args, run_cli
+
+from sybaritic.cli import parse_args, run_cli
 
 
-def test_cli_parse_args_defaults():
+def test_cli_parse_args_defaults() -> None:
     args = parse_args(["spartan://example.com/foo"])
     assert args.url == "spartan://example.com/foo"
     assert args.data is None
@@ -17,7 +19,7 @@ def test_cli_parse_args_defaults():
     assert args.verbose is False
 
 
-def test_cli_parse_args_custom():
+def test_cli_parse_args_custom() -> None:
     args = parse_args(
         [
             "example.com/bar",
@@ -46,8 +48,10 @@ def test_cli_parse_args_custom():
 
 
 @pytest.mark.asyncio
-async def test_cli_execution_success(capsys):
-    async def handle_client(reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
+async def test_cli_execution_success(capsys: pytest.CaptureFixture[str]) -> None:
+    async def handle_client(
+        reader: asyncio.StreamReader, writer: asyncio.StreamWriter
+    ) -> None:
         await reader.readline()
         writer.write(b"2 text/plain\r\nHello from CLI Test\r\n")
         await writer.drain()
@@ -66,8 +70,12 @@ async def test_cli_execution_success(capsys):
 
 
 @pytest.mark.asyncio
-async def test_cli_execution_with_headers_and_verbose(capsys):
-    async def handle_client(reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
+async def test_cli_execution_with_headers_and_verbose(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    async def handle_client(
+        reader: asyncio.StreamReader, writer: asyncio.StreamWriter
+    ) -> None:
         req = await reader.readline()
         path = req.decode("ascii").split(" ")[1]
         if path == "/old":
@@ -94,7 +102,7 @@ async def test_cli_execution_with_headers_and_verbose(capsys):
 
 
 @pytest.mark.asyncio
-async def test_cli_invalid_uri_error(capsys):
+async def test_cli_invalid_uri_error(capsys: pytest.CaptureFixture[str]) -> None:
     args = parse_args(["http://invalid-scheme.com"])
     exit_code = await run_cli(args)
     assert exit_code == 1

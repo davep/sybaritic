@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import contextlib
 from typing import Self
 
 from sybaritic.exceptions import (
@@ -29,9 +30,10 @@ class Client:
     async def __aenter__(self) -> Self:
         return self
 
-    async def __aexit__(self, exc_type: object, exc_val: object, exc_tb: object) -> None:
+    async def __aexit__(
+        self, exc_type: object, exc_val: object, exc_tb: object
+    ) -> None:
         pass
-
 
     async def send_request(
         self,
@@ -59,14 +61,16 @@ class Client:
             payload = b""
 
         content_length = len(payload)
-        request_line = f"{uri.punycode_host} {uri.path} {content_length}\r\n".encode("ascii")
+        request_line = f"{uri.punycode_host} {uri.path} {content_length}\r\n".encode(
+            "ascii"
+        )
 
         try:
             reader, writer = await asyncio.wait_for(
                 asyncio.open_connection(uri.host, uri.port),
                 timeout=eff_timeout,
             )
-        except (OSError, asyncio.TimeoutError) as exc:
+        except (TimeoutError, OSError) as exc:
             raise SybariticConnectionError(
                 f"Failed to connect to {uri.host}:{uri.port}: {exc}"
             ) from exc
@@ -77,7 +81,9 @@ class Client:
 
             raw_line = await asyncio.wait_for(reader.readline(), timeout=eff_timeout)
             if not raw_line:
-                raise ResponseError("Server closed connection without sending a response line")
+                raise ResponseError(
+                    "Server closed connection without sending a response line"
+                )
 
             line = raw_line.rstrip(b"\r\n")
             if not line:
@@ -109,7 +115,7 @@ class Client:
                 history=[],
             )
 
-        except asyncio.TimeoutError as exc:
+        except TimeoutError as exc:
             raise SybariticConnectionError(
                 f"Timed out communicating with {uri.host}:{uri.port}"
             ) from exc
@@ -119,10 +125,8 @@ class Client:
             raise RequestError(f"Error during request execution: {exc}") from exc
         finally:
             writer.close()
-            try:
+            with contextlib.suppress(OSError, RuntimeError, asyncio.CancelledError):
                 await writer.wait_closed()
-            except Exception:
-                pass
 
     async def request(
         self,
@@ -173,7 +177,9 @@ class Client:
             target_key = f"{target_uri.host}:{target_uri.port}{target_uri.path}"
 
             if target_key in visited:
-                raise RedirectLoopError(f"Redirect loop detected for URI '{target_uri}'")
+                raise RedirectLoopError(
+                    f"Redirect loop detected for URI '{target_uri}'"
+                )
 
             history.append(response)
             current_uri = target_uri
