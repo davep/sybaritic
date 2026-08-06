@@ -32,13 +32,23 @@ class Client:
     async def __aexit__(self, exc_type: object, exc_val: object, exc_tb: object) -> None:
         pass
 
+
     async def send_request(
         self,
         uri: SpartanURI,
         data: bytes | str | None = None,
         timeout: float | None = None,
     ) -> Response:
-        """Send a single low-level Spartan request to the server without following redirects."""
+        """Send a single low-level Spartan request to the server without following redirects.
+
+        Args:
+            uri: Target SpartanURI object.
+            data: Optional payload string or bytes.
+            timeout: Optional connection timeout in seconds.
+
+        Returns:
+            Response object.
+        """
         eff_timeout = timeout if timeout is not None else self.timeout
 
         if isinstance(data, str):
@@ -62,11 +72,9 @@ class Client:
             ) from exc
 
         try:
-            # Write request line and payload
             writer.write(request_line + payload)
             await asyncio.wait_for(writer.drain(), timeout=eff_timeout)
 
-            # Read status line
             raw_line = await asyncio.wait_for(reader.readline(), timeout=eff_timeout)
             if not raw_line:
                 raise ResponseError("Server closed connection without sending a response line")
@@ -75,14 +83,12 @@ class Client:
             if not line:
                 raise HeaderError("Empty status line received from server")
 
-            # Parse status code (single digit ASCII)
             first_char = chr(line[0])
             if not (first_char.isdigit() and first_char in "2345"):
                 raise HeaderError(f"Invalid status code in response: {first_char!r}")
 
             status = Status(int(first_char))
 
-            # Parse metadata (string after status code and optional space)
             if len(line) > 1 and line[1:2] == b" ":
                 meta_bytes = line[2:]
             else:
@@ -90,12 +96,18 @@ class Client:
 
             meta = meta_bytes.decode("utf-8", errors="replace").strip()
 
-            # Read response body for success responses (Status 2)
             content = b""
             if status == Status.SUCCESS:
                 content = await asyncio.wait_for(reader.read(), timeout=eff_timeout)
 
-            return Response(uri=uri, status=status, meta=meta, content=content)
+            return Response(
+                uri=uri,
+                status=status,
+                meta=meta,
+                content=content,
+                requested_uri=uri,
+                history=[],
+            )
 
         except asyncio.TimeoutError as exc:
             raise SybariticConnectionError(
@@ -116,6 +128,7 @@ class Client:
         self,
         uri: str | SpartanURI,
         data: bytes | str | None = None,
+        *,
         timeout: float | None = None,
         follow_redirects: bool = True,
         max_redirects: int = 5,
@@ -123,16 +136,18 @@ class Client:
         """Perform a Spartan request with optional redirect following.
 
         Args:
-            uri: Target Spartan URI or URI string.
+            uri: Target Spartan URI string or SpartanURI.
             data: Optional data payload to upload.
             timeout: Optional override for connection timeout in seconds.
             follow_redirects: Whether to follow status 3 redirects automatically.
             max_redirects: Maximum number of redirects to follow before raising error.
 
         Returns:
-            Response object.
+            Response object containing final target URI, history, and status.
         """
-        current_uri = SpartanURI.parse(uri)
+        original_uri = SpartanURI.parse(uri)
+        current_uri = original_uri
+        history: list[Response] = []
         visited: set[str] = set()
         redirect_count = 0
 
@@ -141,6 +156,8 @@ class Client:
             visited.add(uri_key)
 
             response = await self.send_request(current_uri, data=data, timeout=timeout)
+            response.requested_uri = original_uri
+            response.history = list(history)
 
             if not response.is_redirect or not follow_redirects:
                 return response
@@ -158,13 +175,14 @@ class Client:
             if target_key in visited:
                 raise RedirectLoopError(f"Redirect loop detected for URI '{target_uri}'")
 
+            history.append(response)
             current_uri = target_uri
-            # Redirect requests do not re-send original POST payload
             data = None
 
     async def get(
         self,
         uri: str | SpartanURI,
+        *,
         timeout: float | None = None,
         follow_redirects: bool = True,
         max_redirects: int = 5,
@@ -182,6 +200,7 @@ class Client:
         self,
         uri: str | SpartanURI,
         data: bytes | str,
+        *,
         timeout: float | None = None,
         follow_redirects: bool = True,
         max_redirects: int = 5,
@@ -194,3 +213,57 @@ class Client:
             follow_redirects=follow_redirects,
             max_redirects=max_redirects,
         )
+
+
+async def request(
+    uri: str | SpartanURI,
+    data: bytes | str | None = None,
+    *,
+    timeout: float = 10.0,
+    follow_redirects: bool = True,
+    max_redirects: int = 5,
+) -> Response:
+    """Top-level convenience function to make a Spartan request."""
+    async with Client(timeout=timeout) as client:
+        return await client.request(
+            uri,
+            data=data,
+            timeout=timeout,
+            follow_redirects=follow_redirects,
+            max_redirects=max_redirects,
+        )
+
+
+async def get(
+    uri: str | SpartanURI,
+    *,
+    timeout: float = 10.0,
+    follow_redirects: bool = True,
+    max_redirects: int = 5,
+) -> Response:
+    """Top-level convenience function to make a GET request."""
+    return await request(
+        uri,
+        data=None,
+        timeout=timeout,
+        follow_redirects=follow_redirects,
+        max_redirects=max_redirects,
+    )
+
+
+async def post(
+    uri: str | SpartanURI,
+    data: bytes | str,
+    *,
+    timeout: float = 10.0,
+    follow_redirects: bool = True,
+    max_redirects: int = 5,
+) -> Response:
+    """Top-level convenience function to make a POST request with payload data."""
+    return await request(
+        uri,
+        data=data,
+        timeout=timeout,
+        follow_redirects=follow_redirects,
+        max_redirects=max_redirects,
+    )

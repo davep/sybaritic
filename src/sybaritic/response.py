@@ -1,4 +1,6 @@
-from dataclasses import dataclass
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 from typing import Optional
 
 from sybaritic.exceptions import ClientError, ServerError
@@ -11,16 +13,24 @@ class Response:
     """Represents a response from a Spartan server.
 
     Attributes:
-        uri: The SpartanURI that produced this response.
+        uri: The final SpartanURI of the response.
         status: The response status code enum.
-        meta: The metadata string from status line (mimetype, redirect path, or error message).
+        meta: Metadata string from status line (mimetype, redirect path, or error message).
         content: Raw response body bytes.
+        requested_uri: The originally requested SpartanURI (before redirects).
+        history: List of intermediate Response objects leading to this response via redirects.
     """
 
     uri: SpartanURI
     status: Status
     meta: str
     content: bytes = b""
+    requested_uri: SpartanURI | None = None
+    history: list[Response] = field(default_factory=list)
+
+    def __post_init__(self) -> None:
+        if self.requested_uri is None:
+            self.requested_uri = self.uri
 
     @property
     def is_success(self) -> bool:
@@ -48,6 +58,11 @@ class Response:
         return self.status.is_error
 
     @property
+    def is_redirected(self) -> bool:
+        """Return True if this response is the result of following redirects."""
+        return len(self.history) > 0
+
+    @property
     def mimetype(self) -> str:
         """Return the MIME type for a successful response (without parameters)."""
         if not self.is_success or not self.meta:
@@ -64,6 +79,11 @@ class Response:
                 if len(kv) == 2 and kv[0].strip().lower() == "charset":
                     return kv[1].strip().strip('"').strip("'")
         return "utf-8"
+
+    @property
+    def charset(self) -> str:
+        """Return the character encoding (alias for encoding)."""
+        return self.encoding
 
     @property
     def text(self) -> str:

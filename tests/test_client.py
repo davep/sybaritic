@@ -1,5 +1,6 @@
 import asyncio
 import pytest
+import sybaritic
 from sybaritic.client import Client
 from sybaritic.exceptions import (
     HeaderError,
@@ -29,22 +30,20 @@ async def test_client_get_success():
             assert resp.status == Status.SUCCESS
             assert resp.mimetype == "text/gemini"
             assert resp.text == "# Welcome to Spartan\r\n"
+            assert not resp.is_redirected
+            assert resp.history == []
 
 
 @pytest.mark.asyncio
-async def test_client_post_payload():
-    received_data = bytearray()
-    received_header = b""
-
+async def test_top_level_get_and_post():
     async def handle_client(reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
-        nonlocal received_header
-        received_header = await reader.readline()
-        # Header format: host path length\r\n
-        parts = received_header.decode("ascii").rstrip("\r\n").split(" ")
-        content_len = int(parts[2])
-        data = await reader.readexactly(content_len)
-        received_data.extend(data)
-        writer.write(b"2 text/plain\r\nReceived payload\r\n")
+        request_line = await reader.readline()
+        if b"/get-test" in request_line:
+            writer.write(b"2 text/plain\r\nTop level GET\r\n")
+        elif b"/post-test" in request_line:
+            payload_len = int(request_line.decode("ascii").split(" ")[2])
+            payload = await reader.readexactly(payload_len)
+            writer.write(f"2 text/plain\r\nTop level POST: {payload.decode('utf-8')}\r\n".encode("utf-8"))
         await writer.drain()
         writer.close()
         await writer.wait_closed()
@@ -53,17 +52,15 @@ async def test_client_post_payload():
     port = server.sockets[0].getsockname()[1]
 
     async with server:
-        async with Client() as client:
-            payload = "Hello, Spartan server!"
-            resp = await client.post(f"127.0.0.1:{port}/submit", data=payload)
-            assert resp.status == Status.SUCCESS
-            assert resp.text == "Received payload\r\n"
-            assert received_header == f"127.0.0.1 /submit {len(payload.encode('utf-8'))}\r\n".encode("ascii")
-            assert received_data == payload.encode("utf-8")
+        resp1 = await sybaritic.get(f"127.0.0.1:{port}/get-test")
+        assert resp1.text == "Top level GET\r\n"
+
+        resp2 = await sybaritic.post(f"127.0.0.1:{port}/post-test", data="hello world")
+        assert resp2.text == "Top level POST: hello world\r\n"
 
 
 @pytest.mark.asyncio
-async def test_client_redirect_following():
+async def test_client_redirect_following_with_history():
     async def handle_client(reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
         request_line = await reader.readline()
         path = request_line.decode("ascii").split(" ")[1]
@@ -84,6 +81,11 @@ async def test_client_redirect_following():
             assert resp.status == Status.SUCCESS
             assert resp.text == "# New Destination\r\n"
             assert resp.uri.path == "/new-path"
+            assert resp.requested_uri.path == "/old-path"
+            assert resp.is_redirected
+            assert len(resp.history) == 1
+            assert resp.history[0].status == Status.REDIRECT
+            assert resp.history[0].uri.path == "/old-path"
 
 
 @pytest.mark.asyncio

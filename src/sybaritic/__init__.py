@@ -2,7 +2,7 @@
 
 __version__ = "0.1.0"
 
-from sybaritic.client import Client
+from sybaritic.client import Client, get, post, request
 from sybaritic.exceptions import (
     ClientError,
     HeaderError,
@@ -57,6 +57,10 @@ __all__ = [
     "TooManyRedirectsError",
     "URIError",
     "__version__",
+    "get",
+    "post",
+    "request",
 ]
+
 
 

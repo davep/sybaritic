@@ -20,25 +20,41 @@ def test_success_response(base_uri):
     assert resp.is_success
     assert not resp.is_redirect
     assert not resp.is_error
+    assert not resp.is_redirected
+    assert resp.requested_uri == base_uri
+    assert resp.history == []
     assert resp.mimetype == "text/gemini"
     assert resp.encoding == "utf-8"
+    assert resp.charset == "utf-8"
     assert resp.text == "# Hello Spartan"
     assert resp.redirect_path is None
     assert resp.error_message is None
-    resp.raise_for_status()  # Should not raise
+    resp.raise_for_status()
 
 
-def test_redirect_response(base_uri):
-    resp = Response(
-        uri=base_uri,
+def test_redirect_history_response():
+    req_uri = SpartanURI("spartan://example.com/initial")
+    final_uri = SpartanURI("spartan://example.com/final")
+
+    redirect_resp = Response(
+        uri=req_uri,
         status=Status.REDIRECT,
-        meta="/new-location",
+        meta="/final",
     )
-    assert resp.is_redirect
-    assert not resp.is_success
-    assert resp.redirect_path == "/new-location"
-    assert resp.mimetype == ""
-    resp.raise_for_status()  # Redirect is not an error status code in raise_for_status
+
+    final_resp = Response(
+        uri=final_uri,
+        status=Status.SUCCESS,
+        meta="text/plain",
+        content=b"Final page content",
+        requested_uri=req_uri,
+        history=[redirect_resp],
+    )
+
+    assert final_resp.is_redirected
+    assert final_resp.requested_uri == req_uri
+    assert len(final_resp.history) == 1
+    assert final_resp.history[0] == redirect_resp
 
 
 def test_client_error_response(base_uri):

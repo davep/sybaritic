@@ -14,6 +14,7 @@ def test_cli_parse_args_defaults():
     assert args.timeout == 10.0
     assert args.include is False
     assert args.raw is False
+    assert args.verbose is False
 
 
 def test_cli_parse_args_custom():
@@ -65,10 +66,14 @@ async def test_cli_execution_success(capsys):
 
 
 @pytest.mark.asyncio
-async def test_cli_execution_with_headers(capsys):
+async def test_cli_execution_with_headers_and_verbose(capsys):
     async def handle_client(reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
-        await reader.readline()
-        writer.write(b"2 text/gemini\r\n# Hello Gemini\r\n")
+        req = await reader.readline()
+        path = req.decode("ascii").split(" ")[1]
+        if path == "/old":
+            writer.write(b"3 /new\r\n")
+        else:
+            writer.write(b"2 text/gemini\r\n# Hello Gemini\r\n")
         await writer.drain()
         writer.close()
         await writer.wait_closed()
@@ -77,11 +82,21 @@ async def test_cli_execution_with_headers(capsys):
     port = server.sockets[0].getsockname()[1]
 
     async with server:
-        args = parse_args(["-i", f"127.0.0.1:{port}/test"])
+        args = parse_args(["-i", "-v", f"127.0.0.1:{port}/old"])
         exit_code = await run_cli(args)
         assert exit_code == 0
         captured = capsys.readouterr()
         assert "Status: 2" in captured.out
         assert "Meta: text/gemini" in captured.out
         assert "# Hello Gemini" in captured.out
+        assert "Redirect history" in captured.err
+        assert "Final Response: 2 SUCCESS" in captured.err
 
+
+@pytest.mark.asyncio
+async def test_cli_invalid_uri_error(capsys):
+    args = parse_args(["http://invalid-scheme.com"])
+    exit_code = await run_cli(args)
+    assert exit_code == 1
+    captured = capsys.readouterr()
+    assert "sybaritic: error: invalid URI" in captured.err
