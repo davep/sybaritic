@@ -14,9 +14,6 @@ SPARTAN_PREFIX: Final[str] = f"{SPARTAN_SCHEME}://"
 SPARTAN_DEFAULT_PORT: Final[int] = 300
 """The default TCP network port for the Spartan protocol."""
 
-SPARTAN_MAXIMUM_LENGTH: Final[int] = 1024
-"""The maximum length of a Spartan URI in bytes."""
-
 
 class _UnsetType:
     """Sentinel class to distinguish between omitted arguments and None."""
@@ -33,9 +30,6 @@ def _normalise_scheme(uri: str) -> str:
 
 class SpartanURI:
     """Represents a validated Spartan protocol URI."""
-
-    MAXIMUM_LENGTH: Final[int] = SPARTAN_MAXIMUM_LENGTH
-    """The maximum length of a Spartan URI in bytes."""
 
     def __init__(
         self,
@@ -173,16 +167,6 @@ class SpartanURI:
             raise URIError(
                 f"Failed to convert host '{self._host}' to punycode"
             ) from exc
-
-    @property
-    def bytes_left(self) -> int:
-        """Return the number of bytes remaining before reaching MAXIMUM_LENGTH."""
-        return self.MAXIMUM_LENGTH - len(str(self).encode("utf-8"))
-
-    @property
-    def too_long(self) -> bool:
-        """Return True if the URI byte representation exceeds MAXIMUM_LENGTH."""
-        return len(str(self).encode("utf-8")) > self.MAXIMUM_LENGTH
 
     @property
     def without_query(self) -> SpartanURI:

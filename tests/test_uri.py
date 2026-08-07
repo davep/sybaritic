@@ -3,7 +3,6 @@ import pytest
 from sybaritic.exceptions import InvalidURIError, URIError
 from sybaritic.uri import (
     SPARTAN_DEFAULT_PORT,
-    SPARTAN_MAXIMUM_LENGTH,
     SPARTAN_SCHEME,
     SpartanURI,
 )
@@ -45,17 +44,10 @@ def test_with_default_scheme_and_from_str() -> None:
     assert u2 == u1
 
 
-def test_length_properties() -> None:
+def test_len_property() -> None:
     uri_str = "spartan://example.com/path"
     uri = SpartanURI(uri_str)
     assert len(uri) == len(uri_str)
-    assert uri.bytes_left == SPARTAN_MAXIMUM_LENGTH - len(uri_str.encode("utf-8"))
-    assert not uri.too_long
-
-    long_path = "/" + "a" * (SPARTAN_MAXIMUM_LENGTH + 10)
-    long_uri = SpartanURI(f"spartan://example.com{long_path}")
-    assert long_uri.too_long
-    assert long_uri.bytes_left < 0
 
 
 def test_parent_and_root_and_without_query() -> None:

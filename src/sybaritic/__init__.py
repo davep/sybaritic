@@ -23,7 +23,6 @@ from sybaritic.response import Response
 from sybaritic.status import Status
 from sybaritic.uri import (
     SPARTAN_DEFAULT_PORT,
-    SPARTAN_MAXIMUM_LENGTH,
     SPARTAN_PREFIX,
     SPARTAN_SCHEME,
     SpartanURI,
@@ -31,7 +30,6 @@ from sybaritic.uri import (
 
 __all__ = [
     "SPARTAN_DEFAULT_PORT",
-    "SPARTAN_MAXIMUM_LENGTH",
     "SPARTAN_PREFIX",
     "SPARTAN_SCHEME",
     "Client",

@@ -40,7 +40,6 @@ All library source files are located in `src/sybaritic/`:
   - Default port is **300** (`SPARTAN_DEFAULT_PORT`).
   - Provides component modifiers (`replace()`, `with_host()`, `with_port()`, `with_path()`, `with_query()`).
   - Provides path navigation properties (`parent`, `root`, `without_query`).
-  - Provides length & spec properties (`MAXIMUM_LENGTH = 1024`, `bytes_left`, `too_long`).
 - **`status.py` (`Status`)**:
   - `IntEnum` for Spartan status codes: `2` (Success), `3` (Redirect), `4` (Client Error), `5` (Server Error).
 - **`exceptions.py`**:
