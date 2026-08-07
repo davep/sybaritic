@@ -1,7 +1,21 @@
 """Sybaritic: Async Spartan Protocol Client Library."""
 
-__version__ = "0.1.0"
+##############################################################################
+# Python imports.
+from importlib.metadata import version
 
+##############################################################################
+# Main library information.
+__author__ = "Dave Pearson"
+__copyright__ = "Copyright 2026, Dave Pearson"
+__credits__ = ["Dave Pearson"]
+__maintainer__ = "Dave Pearson"
+__email__ = "davep@davep.org"
+__version__: str = version("sybaritic")
+__licence__ = "MIT"
+
+##############################################################################
+# Local imports.
 from sybaritic.client import Client, get, post, request
 from sybaritic.exceptions import (
     ClientError,
@@ -28,21 +42,27 @@ from sybaritic.uri import (
     SpartanURI,
 )
 
+##############################################################################
+# Exports.
 __all__ = [
-    "SPARTAN_DEFAULT_PORT",
-    "SPARTAN_PREFIX",
-    "SPARTAN_SCHEME",
+    "__version__",
     "Client",
     "ClientError",
+    "get",
     "HeaderError",
     "InvalidRedirectError",
     "InvalidURIError",
+    "post",
     "RedirectError",
     "RedirectLoopError",
+    "request",
     "RequestError",
     "Response",
     "ResponseError",
     "ServerError",
+    "SPARTAN_DEFAULT_PORT",
+    "SPARTAN_PREFIX",
+    "SPARTAN_SCHEME",
     "SpartanURI",
     "Status",
     "StatusError",
@@ -50,8 +70,6 @@ __all__ = [
     "SybariticError",
     "TooManyRedirectsError",
     "URIError",
-    "__version__",
-    "get",
-    "post",
-    "request",
 ]
+
+### __init__.py ends here
