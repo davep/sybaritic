@@ -162,7 +162,8 @@ async def run_cli(args: argparse.Namespace) -> int:
                 print(f"Redirect ({response.status.value}): {response.redirect_path}")
             elif response.is_error:
                 print(
-                    f"sybaritic: error: status {response.status.value} ({response.status.name}): {response.error_message}",
+                    f"sybaritic: error: status {response.status.value}"
+                    f" ({response.status.name}): {response.error_message}",
                     file=sys.stderr,
                 )
                 return 1

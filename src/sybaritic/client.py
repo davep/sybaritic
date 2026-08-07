@@ -95,10 +95,7 @@ class Client:
 
             status = Status(int(first_char))
 
-            if len(line) > 1 and line[1:2] == b" ":
-                meta_bytes = line[2:]
-            else:
-                meta_bytes = line[1:]
+            meta_bytes = line[2:] if len(line) > 1 and line[1:2] == b" " else line[1:]
 
             meta = meta_bytes.decode("utf-8", errors="replace").strip()
 

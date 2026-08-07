@@ -204,10 +204,7 @@ class SpartanURI:
             return self.without_query
 
         path = self._path.rstrip("/")
-        if "/" not in path:
-            parent_path = "/"
-        else:
-            parent_path = path.rsplit("/", 1)[0] + "/"
+        parent_path = "/" if "/" not in path else path.rsplit("/", 1)[0] + "/"
 
         if not parent_path.startswith("/"):
             parent_path = f"/{parent_path}"
