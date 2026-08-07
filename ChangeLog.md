@@ -1,8 +1,8 @@
 # Sybaritic ChangeLog
 
-## Unreleased
+## v0.0.2
 
-**Released: WiP**
+**Released: 2026-08-07**
 
 - Renamed `Response.mimetype` to `Response.mime_type`.
   ([#3](https://github.com/davep/sybaritic/pull/3))
