@@ -5,7 +5,7 @@
 **Released: 2026-08-07**
 
 - Merged missing `resolve` method back into the library.
-  ([#8](https://github.com/davep/sybaritic/pull/8))
+  ([#6](https://github.com/davep/sybaritic/pull/6))
 
 ## v0.1.0
 
