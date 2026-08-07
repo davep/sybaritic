@@ -22,20 +22,16 @@ from sybaritic.exceptions import (
 from sybaritic.response import Response
 from sybaritic.status import Status
 from sybaritic.uri import (
-    DEFAULT_PORT,
-    DEFAULT_SCHEME,
-    MAXIMUM_LENGTH,
     SPARTAN_DEFAULT_PORT,
+    SPARTAN_MAXIMUM_LENGTH,
     SPARTAN_PREFIX,
     SPARTAN_SCHEME,
     SpartanURI,
 )
 
 __all__ = [
-    "DEFAULT_PORT",
-    "DEFAULT_SCHEME",
-    "MAXIMUM_LENGTH",
     "SPARTAN_DEFAULT_PORT",
+    "SPARTAN_MAXIMUM_LENGTH",
     "SPARTAN_PREFIX",
     "SPARTAN_SCHEME",
     "Client",

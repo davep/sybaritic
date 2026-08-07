@@ -9,7 +9,7 @@ from pathlib import Path
 from sybaritic import __version__
 from sybaritic.client import Client
 from sybaritic.exceptions import SybariticError
-from sybaritic.uri import DEFAULT_PORT, SpartanURI
+from sybaritic.uri import SPARTAN_DEFAULT_PORT, SpartanURI
 
 
 def parse_args(args: Sequence[str] | None = None) -> argparse.Namespace:
@@ -43,7 +43,7 @@ def parse_args(args: Sequence[str] | None = None) -> argparse.Namespace:
         "-p",
         "--port",
         type=int,
-        help=f"Override target network port (default: {DEFAULT_PORT}).",
+        help=f"Override target network port (default: {SPARTAN_DEFAULT_PORT}).",
     )
     parser.add_argument(
         "-L",
