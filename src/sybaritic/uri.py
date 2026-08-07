@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from typing import Final
-from urllib.parse import urlparse
+from urllib.parse import urljoin, urlparse
 
 from sybaritic.exceptions import URIError
 
@@ -255,6 +255,36 @@ class SpartanURI:
     def with_query(self, query: str | None) -> SpartanURI:
         """Return a new SpartanURI with the specified query string (or None to clear)."""
         return self.replace(query=query)
+
+    def resolve(self, relative_uri: str) -> SpartanURI:
+        """Resolve a relative URI string against this URI as a base.
+
+        Args:
+            relative_uri: The relative or absolute target URI string.
+
+        Returns:
+            A new SpartanURI representing the resolved target.
+
+        Raises:
+            URIError: If the resolved target URI is invalid, or if the relative URI
+                cannot be parsed or resolved against the base URI.
+        """
+        base_str = str(self)
+        base_http = base_str.replace(SPARTAN_PREFIX, "https://", 1)
+
+        relative_cleaned = _normalise_scheme(relative_uri)
+        relative_http = relative_cleaned
+        if relative_cleaned.startswith(SPARTAN_PREFIX):
+            relative_http = "https://" + relative_cleaned.removeprefix(SPARTAN_PREFIX)
+
+        try:
+            resolved_http = urljoin(base_http, relative_http)
+            resolved_spartan = resolved_http.replace("https://", SPARTAN_PREFIX, 1)
+            return self.__class__(resolved_spartan)
+        except Exception as e:
+            raise URIError(
+                f"Failed to resolve relative URI '{relative_uri}' against base '{base_str}': {e}"
+            ) from e
 
     def resolve_redirect(self, target_path: str) -> SpartanURI:
         """Return a new SpartanURI for a redirect target on the same host."""
