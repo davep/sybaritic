@@ -11,3 +11,6 @@ wheels/
 
 # Testing
 .coverage
+
+# Docs
+site/
