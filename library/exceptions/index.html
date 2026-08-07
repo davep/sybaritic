@@ -585,10 +585,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#sybaritic.exceptions.ClientError" class="md-nav__link">
+  <a href="#sybaritic.exceptions.ConnectionError" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;ClientError
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;ConnectionError
       
     </span>
   </a>
@@ -655,39 +655,6 @@
     <span class="md-ellipsis">
       
         <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;ResponseError
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#sybaritic.exceptions.ServerError" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;ServerError
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#sybaritic.exceptions.StatusError" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;StatusError
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#sybaritic.exceptions.SybariticConnectionError" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;SybariticConnectionError
       
     </span>
   </a>
@@ -917,10 +884,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#sybaritic.exceptions.ClientError" class="md-nav__link">
+  <a href="#sybaritic.exceptions.ConnectionError" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;ClientError
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;ConnectionError
       
     </span>
   </a>
@@ -994,39 +961,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#sybaritic.exceptions.ServerError" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;ServerError
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#sybaritic.exceptions.StatusError" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;StatusError
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#sybaritic.exceptions.SybariticConnectionError" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;SybariticConnectionError
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#sybaritic.exceptions.SybariticError" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1088,6 +1022,8 @@
 <a id="sybaritic.exceptions"></a>
     <div class="doc doc-contents first">
 
+        <p>Exceptions for the Sybaritic Spartan client library.</p>
+
 
 
 
@@ -1111,40 +1047,20 @@
 
 
 
-<h2 id="sybaritic.exceptions.ClientError" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">ClientError</span>
+<h2 id="sybaritic.exceptions.ConnectionError" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">ConnectionError</span>
 
 
 </h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">ClientError</span><span class="p">(</span>
-    <span class="n"><span title="sybaritic.exceptions.ClientError(message)">message</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">,</span> <span class="n"><span title="sybaritic.exceptions.ClientError(response)">response</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Optional" href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="            Response
 
-
-  
-      dataclass
-   (sybaritic.response.Response)" href="../response/#sybaritic.response.Response">Response</a></span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="p">)</span>
-</code></pre></div>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="            StatusError (sybaritic.exceptions.StatusError)" href="#sybaritic.exceptions.StatusError">StatusError</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="            SybariticError (sybaritic.exceptions.SybariticError)" href="#sybaritic.exceptions.SybariticError">SybariticError</a></code></p>
 
 
 
-        <p>Raised when server returns a client error status (status 4).</p>
-
-
-
-
-
-
-
-
-
-
-
-<div class="doc doc-children">
+        <p>Raised when a network connection to a Spartan server fails.</p>
 
 
 
@@ -1153,11 +1069,6 @@
 
 
 
-
-
-
-
-  </div>
 
     </div>
 
@@ -1353,149 +1264,6 @@
 
 
 
-<h2 id="sybaritic.exceptions.ServerError" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">ServerError</span>
-
-
-</h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">ServerError</span><span class="p">(</span>
-    <span class="n"><span title="sybaritic.exceptions.ServerError(message)">message</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">,</span> <span class="n"><span title="sybaritic.exceptions.ServerError(response)">response</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Optional" href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="            Response
-
-
-  
-      dataclass
-   (sybaritic.response.Response)" href="../response/#sybaritic.response.Response">Response</a></span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="p">)</span>
-</code></pre></div>
-
-    <div class="doc doc-contents ">
-            <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="            StatusError (sybaritic.exceptions.StatusError)" href="#sybaritic.exceptions.StatusError">StatusError</a></code></p>
-
-
-
-        <p>Raised when server returns a server error status (status 5).</p>
-
-
-
-
-
-
-
-
-
-
-
-<div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-
-
-
-  </div>
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-class">
-
-
-
-<h2 id="sybaritic.exceptions.StatusError" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">StatusError</span>
-
-
-</h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">StatusError</span><span class="p">(</span>
-    <span class="n"><span title="sybaritic.exceptions.StatusError(message)">message</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">,</span> <span class="n"><span title="sybaritic.exceptions.StatusError(response)">response</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Optional" href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="            Response
-
-
-  
-      dataclass
-   (sybaritic.response.Response)" href="../response/#sybaritic.response.Response">Response</a></span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="p">)</span>
-</code></pre></div>
-
-    <div class="doc doc-contents ">
-            <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="            SybariticError (sybaritic.exceptions.SybariticError)" href="#sybaritic.exceptions.SybariticError">SybariticError</a></code></p>
-
-
-
-        <p>Raised when a response status indicates an error (status 4 or 5).</p>
-
-
-
-
-
-
-
-
-
-
-
-<div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-
-
-
-  </div>
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-class">
-
-
-
-<h2 id="sybaritic.exceptions.SybariticConnectionError" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">SybariticConnectionError</span>
-
-
-</h2>
-
-
-    <div class="doc doc-contents ">
-            <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="            SybariticError (sybaritic.exceptions.SybariticError)" href="#sybaritic.exceptions.SybariticError">SybariticError</a></code></p>
-
-
-
-        <p>Raised when a network connection to a Spartan server fails.</p>
-
-
-
-
-
-
-
-
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-class">
-
-
-
 <h2 id="sybaritic.exceptions.SybariticError" class="doc doc-heading">
 <code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">SybariticError</span>
 
@@ -1567,7 +1335,7 @@
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="            SybariticError (sybaritic.exceptions.SybariticError)" href="#sybaritic.exceptions.SybariticError">SybariticError</a></code>, <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/exceptions.html#ValueError">ValueError</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="            SybariticError (sybaritic.exceptions.SybariticError)" href="#sybaritic.exceptions.SybariticError">SybariticError</a></code></p>
 
 
 
