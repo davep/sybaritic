@@ -1,22 +1,15 @@
-from typing import TYPE_CHECKING, Optional
-
-if TYPE_CHECKING:
-    from sybaritic.response import Response
+"""Exceptions for the Sybaritic Spartan client library."""
 
 
 class SybariticError(Exception):
     """Base exception for all sybaritic errors."""
 
 
-class URIError(SybariticError, ValueError):
+class URIError(SybariticError):
     """Raised when a Spartan URI is invalid, unparsable, or has an invalid scheme."""
 
 
-# Alias for backward compatibility
-InvalidURIError = URIError
-
-
-class SybariticConnectionError(SybariticError):
+class ConnectionError(SybariticError):
     """Raised when a network connection to a Spartan server fails."""
 
 
@@ -48,17 +41,4 @@ class RequestError(SybariticError):
     """Raised when sending a request fails."""
 
 
-class StatusError(SybariticError):
-    """Raised when a response status indicates an error (status 4 or 5)."""
-
-    def __init__(self, message: str, response: Optional["Response"] = None) -> None:
-        super().__init__(message)
-        self.response = response
-
-
-class ClientError(StatusError):
-    """Raised when server returns a client error status (status 4)."""
-
-
-class ServerError(StatusError):
-    """Raised when server returns a server error status (status 5)."""
+### exceptions.py ends here

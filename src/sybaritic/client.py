@@ -5,16 +5,52 @@ import contextlib
 from typing import Self
 
 from sybaritic.exceptions import (
+    ConnectionError,
     HeaderError,
     RedirectLoopError,
     RequestError,
     ResponseError,
-    SybariticConnectionError,
     TooManyRedirectsError,
 )
 from sybaritic.response import Response
 from sybaritic.status import Status
 from sybaritic.uri import SpartanURI
+
+
+class WrappedStreamReader:
+    """Wraps StreamReader to ensure the StreamWriter is closed upon reaching EOF or on error."""
+
+    def __init__(
+        self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter
+    ) -> None:
+        """Initialise the wrapper.
+
+        Args:
+            reader: The stream reader to wrap.
+            writer: The stream writer to close on EOF or error.
+        """
+        self._reader = reader
+        self._writer = writer
+        self._closed = False
+
+    async def read(self, n: int = -1) -> bytes:
+        """Read data from the stream, closing the connection at EOF."""
+        try:
+            chunk = await self._reader.read(n)
+            if not chunk or n == -1:
+                await self.close()
+            return chunk
+        except Exception:
+            await self.close()
+            raise
+
+    async def close(self) -> None:
+        """Close the writer transport."""
+        if not self._closed:
+            self._closed = True
+            self._writer.close()
+            with contextlib.suppress(OSError, RuntimeError, asyncio.CancelledError):
+                await self._writer.wait_closed()
 
 
 class Client:
@@ -71,10 +107,11 @@ class Client:
                 timeout=eff_timeout,
             )
         except (TimeoutError, OSError) as exc:
-            raise SybariticConnectionError(
+            raise ConnectionError(
                 f"Failed to connect to {uri.host}:{uri.port}: {exc}"
             ) from exc
 
+        handed_off = False
         try:
             writer.write(request_line + payload)
             await asyncio.wait_for(writer.drain(), timeout=eff_timeout)
@@ -99,31 +136,40 @@ class Client:
 
             meta = meta_bytes.decode("utf-8", errors="replace").strip()
 
-            content = b""
             if status == Status.SUCCESS:
-                content = await asyncio.wait_for(reader.read(), timeout=eff_timeout)
-
-            return Response(
-                uri=uri,
-                status=status,
-                meta=meta,
-                content=content,
-                requested_uri=uri,
-                history=[],
-            )
+                wrapped_reader = WrappedStreamReader(reader, writer)
+                handed_off = True
+                return Response(
+                    status=status,
+                    meta=meta,
+                    reader=wrapped_reader,
+                    uri=uri,
+                    requested_uri=uri,
+                    history=[],
+                )
+            else:
+                return Response(
+                    status=status,
+                    meta=meta,
+                    reader=None,
+                    uri=uri,
+                    requested_uri=uri,
+                    history=[],
+                )
 
         except TimeoutError as exc:
-            raise SybariticConnectionError(
+            raise ConnectionError(
                 f"Timed out communicating with {uri.host}:{uri.port}"
             ) from exc
-        except (ResponseError, SybariticConnectionError):
+        except (ResponseError, ConnectionError):
             raise
         except Exception as exc:
             raise RequestError(f"Error during request execution: {exc}") from exc
         finally:
-            writer.close()
-            with contextlib.suppress(OSError, RuntimeError, asyncio.CancelledError):
-                await writer.wait_closed()
+            if not handed_off:
+                writer.close()
+                with contextlib.suppress(OSError, RuntimeError, asyncio.CancelledError):
+                    await writer.wait_closed()
 
     async def request(
         self,
@@ -165,6 +211,7 @@ class Client:
 
             redirect_count += 1
             if redirect_count > max_redirects:
+                await response.close()
                 raise TooManyRedirectsError(
                     f"Exceeded maximum redirect count of {max_redirects}"
                 )
@@ -174,11 +221,13 @@ class Client:
             target_key = f"{target_uri.host}:{target_uri.port}{target_uri.path}"
 
             if target_key in visited:
+                await response.close()
                 raise RedirectLoopError(
                     f"Redirect loop detected for URI '{target_uri}'"
                 )
 
             history.append(response)
+            await response.close()
             current_uri = target_uri
             data = None
 
@@ -228,13 +277,15 @@ async def request(
 ) -> Response:
     """Top-level convenience function to make a Spartan request."""
     async with Client(timeout=timeout) as client:
-        return await client.request(
+        response = await client.request(
             uri,
             data=data,
             timeout=timeout,
             follow_redirects=follow_redirects,
             max_redirects=max_redirects,
         )
+        await response.read()
+        return response
 
 
 async def get(

@@ -44,10 +44,10 @@ All library source files are located in `src/sybaritic/`:
   - `IntEnum` for Spartan status codes: `2` (Success), `3` (Redirect), `4` (Client Error), `5` (Server Error).
 - **`exceptions.py`**:
   - Exception hierarchy rooted at `SybariticError`.
-  - Includes `URIError` (aliased to `InvalidURIError`), `SybariticConnectionError`, `ResponseError`, `HeaderError`, `RedirectError` (`RedirectLoopError`, `TooManyRedirectsError`), `RequestError`, and `StatusError` (`ClientError`, `ServerError`).
+  - Includes `URIError`, `ConnectionError`, `ResponseError`, `HeaderError`, `RedirectError` (`RedirectLoopError`, `TooManyRedirectsError`), and `RequestError`.
 - **`response.py` (`Response`)**:
   - Encapsulates Spartan server responses.
-  - Exposes `requested_uri`, `uri`, `history`, `is_redirected`, `status`, `meta`, `content`, `text`, `mime_type`, `charset`, and `raise_for_status()`.
+  - Exposes `requested_uri`, `uri`, `history`, `is_redirected`, `status`, `meta`, `content`, `content_type`, `mime_type`, `charset`, `read()`, `text()`, `iter_chunks()`, and `close()`.
 - **`client.py` (`Client`)**:
   - Async client supporting `async with Client() as client:` and methods `get()`, `post()`, `request()`, `send_request()`.
   - Exposes top-level convenience functions: `sybaritic.get()`, `sybaritic.post()`, `sybaritic.request()`.

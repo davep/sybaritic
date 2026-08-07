@@ -1,6 +1,6 @@
 import pytest
 
-from sybaritic.exceptions import InvalidURIError, URIError
+from sybaritic.exceptions import URIError
 from sybaritic.uri import (
     SPARTAN_DEFAULT_PORT,
     SPARTAN_SCHEME,
@@ -148,7 +148,3 @@ def test_uri_equality_and_hash() -> None:
     assert u1 != "not a uri"
     assert hash(u1) == hash(u2)
     assert len({u1, u2, u3}) == 2
-
-
-def test_invalid_uri_alias() -> None:
-    assert issubclass(InvalidURIError, URIError)
