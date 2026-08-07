@@ -31,7 +31,7 @@ async def test_client_get_success() -> None:
         resp = await client.get(f"spartan://127.0.0.1:{port}/index.gmi")
         assert resp.status == Status.SUCCESS
         assert resp.mime_type == "text/gemini"
-        assert resp.text == "# Welcome to Spartan\r\n"
+        assert await resp.text() == "# Welcome to Spartan\r\n"
         assert not resp.is_redirected
         assert resp.history == []
 
@@ -59,10 +59,10 @@ async def test_top_level_get_and_post() -> None:
 
     async with server:
         resp1 = await sybaritic.get(f"127.0.0.1:{port}/get-test")
-        assert resp1.text == "Top level GET\r\n"
+        assert await resp1.text() == "Top level GET\r\n"
 
         resp2 = await sybaritic.post(f"127.0.0.1:{port}/post-test", data="hello world")
-        assert resp2.text == "Top level POST: hello world\r\n"
+        assert await resp2.text() == "Top level POST: hello world\r\n"
 
 
 @pytest.mark.asyncio
@@ -86,14 +86,16 @@ async def test_client_redirect_following_with_history() -> None:
     async with server, Client() as client:
         resp = await client.get(f"127.0.0.1:{port}/old-path")
         assert resp.status == Status.SUCCESS
-        assert resp.text == "# New Destination\r\n"
-        assert resp.uri.path == "/new-path"
+        assert await resp.text() == "# New Destination\r\n"
+        assert resp.uri is not None and resp.uri.path == "/new-path"
         assert resp.requested_uri is not None
         assert resp.requested_uri.path == "/old-path"
         assert resp.is_redirected
         assert len(resp.history) == 1
         assert resp.history[0].status == Status.REDIRECT
-        assert resp.history[0].uri.path == "/old-path"
+        assert (
+            resp.history[0].uri is not None and resp.history[0].uri.path == "/old-path"
+        )
 
 
 @pytest.mark.asyncio

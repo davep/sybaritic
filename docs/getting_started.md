@@ -33,7 +33,7 @@ async def main() -> None:
             print(f"MIME type: {response.mime_type}")
             print(f"Content length: {len(response.content)} bytes")
             print("\n--- Response Text ---")
-            print(response.text)
+            print(await response.text())
         except SybariticError as exc:
             print(f"Request failed: {exc}")
 
@@ -49,7 +49,7 @@ import sybaritic
 
 async def main() -> None:
     response = await sybaritic.get("spartan://spartan.mozz.us/")
-    print(response.text)
+    print(await response.text())
 
 if __name__ == "__main__":
     asyncio.run(main())
@@ -75,7 +75,7 @@ async def submit_comment() -> None:
 
         if response.is_success:
             print("Successfully submitted comment!")
-            print(response.text)
+            print(await response.text())
         elif response.is_error:
             print(f"Server returned error: {response.error_message}")
 
@@ -154,8 +154,8 @@ if __name__ == "__main__":
 
 All exceptions raised by the library inherit from the base class [SybariticError][sybaritic.exceptions.SybariticError]. You can catch specific subclasses to handle fine-grained error conditions:
 
-- **[URIError][sybaritic.exceptions.URIError]** (aliased as `InvalidURIError`): Raised when a given Spartan URI string cannot be parsed or has an unsupported scheme.
-- **[SybariticConnectionError][sybaritic.exceptions.SybariticConnectionError]**: Raised when network connections fail, drop, or time out.
+- **[URIError][sybaritic.exceptions.URIError]**: Raised when a given Spartan URI string cannot be parsed or has an unsupported scheme.
+- **[ConnectionError][sybaritic.exceptions.ConnectionError]**: Raised when network connections fail, drop, or time out.
 - **[ResponseError][sybaritic.exceptions.ResponseError]**: Base class for response processing failures.
   - **[HeaderError][sybaritic.exceptions.HeaderError]**: Raised when response status lines are missing or malformed.
 - **[RedirectError][sybaritic.exceptions.RedirectError]**: Base class for redirect issues.
@@ -163,6 +163,3 @@ All exceptions raised by the library inherit from the base class [SybariticError
   - **[RedirectLoopError][sybaritic.exceptions.RedirectLoopError]**: Raised when a redirect loop is detected.
   - **[InvalidRedirectError][sybaritic.exceptions.InvalidRedirectError]**: Raised when a redirect path header is invalid.
 - **[RequestError][sybaritic.exceptions.RequestError]**: Raised when an error occurs during request execution.
-- **[StatusError][sybaritic.exceptions.StatusError]**: Raised by `response.raise_for_status()` when the response indicates an error.
-  - **[ClientError][sybaritic.exceptions.ClientError]**: Raised when server returns a client error status (`4`).
-  - **[ServerError][sybaritic.exceptions.ServerError]**: Raised when server returns a server error status (`5`).

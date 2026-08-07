@@ -153,11 +153,12 @@ async def run_cli(args: argparse.Namespace) -> int:
             print()
 
         if args.raw:
-            sys.stdout.buffer.write(response.content)
+            sys.stdout.buffer.write(await response.read())
             sys.stdout.buffer.flush()
         else:
             if response.is_success:
-                print(response.text, end="" if response.text.endswith("\n") else "\n")
+                text = await response.text()
+                print(text, end="" if text.endswith("\n") else "\n")
             elif response.is_redirect:
                 print(f"Redirect ({response.status.value}): {response.redirect_path}")
             elif response.is_error:
