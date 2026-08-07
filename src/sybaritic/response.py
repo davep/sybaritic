@@ -14,7 +14,7 @@ class Response:
     Attributes:
         uri: The final SpartanURI of the response.
         status: The response status code enum.
-        meta: Metadata string from status line (mimetype, redirect path, or error message).
+        meta: Metadata string from status line (MIME type, redirect path, or error message).
         content: Raw response body bytes.
         requested_uri: The originally requested SpartanURI (before redirects).
         history: List of intermediate Response objects leading to this response via redirects.
@@ -62,7 +62,7 @@ class Response:
         return len(self.history) > 0
 
     @property
-    def mimetype(self) -> str:
+    def mime_type(self) -> str:
         """Return the MIME type for a successful response (without parameters)."""
         if not self.is_success or not self.meta:
             return ""
@@ -70,7 +70,7 @@ class Response:
 
     @property
     def encoding(self) -> str:
-        """Return the character encoding extracted from mimetype parameters, defaulting to 'utf-8'."""
+        """Return the character encoding extracted from MIME type parameters, defaulting to 'utf-8'."""
         if self.is_success and ";" in self.meta:
             parts = self.meta.split(";")[1:]
             for part in parts:

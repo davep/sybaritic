@@ -30,7 +30,7 @@ async def test_client_get_success() -> None:
     async with server, Client() as client:
         resp = await client.get(f"spartan://127.0.0.1:{port}/index.gmi")
         assert resp.status == Status.SUCCESS
-        assert resp.mimetype == "text/gemini"
+        assert resp.mime_type == "text/gemini"
         assert resp.text == "# Welcome to Spartan\r\n"
         assert not resp.is_redirected
         assert resp.history == []

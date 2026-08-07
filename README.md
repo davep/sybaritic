@@ -49,7 +49,7 @@ async def main():
             response = await client.request("spartan://spartan.mozz.us/specification.gmi")
 
             print(f"Status: {response.status} ({response.meta})")
-            print(f"Content Type: {response.mimetype}")
+            print(f"Content Type: {response.mime_type}")
             print(response.text)
 
         except SybariticError as exc:

@@ -24,7 +24,7 @@ def test_success_response(base_uri: SpartanURI) -> None:
     assert not resp.is_redirected
     assert resp.requested_uri == base_uri
     assert resp.history == []
-    assert resp.mimetype == "text/gemini"
+    assert resp.mime_type == "text/gemini"
     assert resp.encoding == "utf-8"
     assert resp.charset == "utf-8"
     assert resp.text == "# Hello Spartan"
