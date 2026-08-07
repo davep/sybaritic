@@ -1,6 +1,6 @@
 [project]
 name = "sybaritic"
-version = "0.0.2"
+version = "0.0.3"
 description = "An async-first, fully-typed client library for the Spartan protocol."
 readme = "README.md"
 authors = [

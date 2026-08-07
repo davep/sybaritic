@@ -148,3 +148,27 @@ def test_uri_equality_and_hash() -> None:
     assert u1 != "not a uri"
     assert hash(u1) == hash(u2)
     assert len({u1, u2, u3}) == 2
+
+
+def test_resolve_relative() -> None:
+    base = SpartanURI("spartan://example.com/path/file.gmi?query")
+
+    # Relative path
+    assert str(base.resolve("other.gmi")) == "spartan://example.com/path/other.gmi"
+    # Parent directory path
+    assert (
+        str(base.resolve("../sibling/file.gmi"))
+        == "spartan://example.com/sibling/file.gmi"
+    )
+    # Absolute path
+    assert str(base.resolve("/root.gmi")) == "spartan://example.com/root.gmi"
+    # Absolute URI with same scheme
+    assert str(base.resolve("spartan://other.com/path")) == "spartan://other.com/path"
+    # Custom port URI
+    base_custom = SpartanURI("spartan://example.com:3000/path/file")
+    assert str(base_custom.resolve("other")) == "spartan://example.com:3000/path/other"
+
+
+def test_resolve_relative_error() -> None:
+    with pytest.raises(URIError, match="Failed to resolve relative URI"):
+        SpartanURI("spartan://example.com/").resolve("http://google.com")
