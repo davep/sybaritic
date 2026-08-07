@@ -11,7 +11,7 @@ All public classes, functions, status codes, and exceptions are exposed at the t
 The following classes form the core interface of the library:
 
 - **[Client][sybaritic.client.Client]**: The asynchronous client used to dispatch requests and manage connections.
-- **[Response][sybaritic.response.Response]**: Represents the server's response, exposing the target URI (`uri`), original URI (`requested_uri`), redirect history (`history`), status code (`status`), header metadata (`meta`), raw body (`content`), decoded text (`text`), MIME type (`mimetype`), and status helpers.
+- **[Response][sybaritic.response.Response]**: Represents the server's response, exposing the target URI (`uri`), original URI (`requested_uri`), redirect history (`history`), status code (`status`), header metadata (`meta`), raw body (`content`), decoded text (`text`), MIME type (`mime_type`), and status helpers.
 - **[SpartanURI][sybaritic.uri.SpartanURI]**: An immutable utility class to parse, validate, manipulate, and resolve Spartan URIs safely.
 - **[Status][sybaritic.status.Status]**: An integer enumeration representing official Spartan protocol response status codes (`SUCCESS`, `REDIRECT`, `CLIENT_ERROR`, `SERVER_ERROR`).
 
@@ -30,7 +30,7 @@ async def main() -> None:
         try:
             response = await client.get("spartan://spartan.mozz.us/specification.gmi")
             print(f"Status: {response.status.value} ({response.status.name})")
-            print(f"MIME type: {response.mimetype}")
+            print(f"MIME type: {response.mime_type}")
             print(f"Content length: {len(response.content)} bytes")
             print("\n--- Response Text ---")
             print(response.text)

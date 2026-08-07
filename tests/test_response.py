@@ -24,13 +24,26 @@ def test_success_response(base_uri: SpartanURI) -> None:
     assert not resp.is_redirected
     assert resp.requested_uri == base_uri
     assert resp.history == []
-    assert resp.mimetype == "text/gemini"
-    assert resp.encoding == "utf-8"
+    assert resp.mime_type == "text/gemini; charset=utf-8"
     assert resp.charset == "utf-8"
     assert resp.text == "# Hello Spartan"
     assert resp.redirect_path is None
     assert resp.error_message is None
     resp.raise_for_status()
+
+
+def test_response_mime_type_default_and_parameters(base_uri: SpartanURI) -> None:
+    empty_meta_resp = Response(uri=base_uri, status=Status.SUCCESS, meta="")
+    assert empty_meta_resp.mime_type == "text/gemini; charset=utf-8"
+
+    spaces_meta_resp = Response(uri=base_uri, status=Status.SUCCESS, meta="   ")
+    assert spaces_meta_resp.mime_type == "text/gemini; charset=utf-8"
+
+    param_resp = Response(
+        uri=base_uri, status=Status.SUCCESS, meta="text/plain; charset=iso-8859-1"
+    )
+    assert param_resp.mime_type == "text/plain; charset=iso-8859-1"
+    assert param_resp.charset == "iso-8859-1"
 
 
 def test_redirect_history_response() -> None:

@@ -47,7 +47,7 @@ All library source files are located in `src/sybaritic/`:
   - Includes `URIError` (aliased to `InvalidURIError`), `SybariticConnectionError`, `ResponseError`, `HeaderError`, `RedirectError` (`RedirectLoopError`, `TooManyRedirectsError`), `RequestError`, and `StatusError` (`ClientError`, `ServerError`).
 - **`response.py` (`Response`)**:
   - Encapsulates Spartan server responses.
-  - Exposes `requested_uri`, `uri`, `history`, `is_redirected`, `status`, `meta`, `content`, `text`, `mimetype`, `encoding`, `charset`, and `raise_for_status()`.
+  - Exposes `requested_uri`, `uri`, `history`, `is_redirected`, `status`, `meta`, `content`, `text`, `mime_type`, `charset`, and `raise_for_status()`.
 - **`client.py` (`Client`)**:
   - Async client supporting `async with Client() as client:` and methods `get()`, `post()`, `request()`, `send_request()`.
   - Exposes top-level convenience functions: `sybaritic.get()`, `sybaritic.post()`, `sybaritic.request()`.

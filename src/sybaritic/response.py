@@ -14,7 +14,7 @@ class Response:
     Attributes:
         uri: The final SpartanURI of the response.
         status: The response status code enum.
-        meta: Metadata string from status line (mimetype, redirect path, or error message).
+        meta: Metadata string from status line (MIME type, redirect path, or error message).
         content: Raw response body bytes.
         requested_uri: The originally requested SpartanURI (before redirects).
         history: List of intermediate Response objects leading to this response via redirects.
@@ -62,17 +62,19 @@ class Response:
         return len(self.history) > 0
 
     @property
-    def mimetype(self) -> str:
-        """Return the MIME type for a successful response (without parameters)."""
-        if not self.is_success or not self.meta:
+    def mime_type(self) -> str:
+        """Return the MIME type for a successful response, defaulting to 'text/gemini; charset=utf-8' if missing."""
+        if not self.is_success:
             return ""
-        return self.meta.split(";")[0].strip().lower()
+        meta = self.meta.strip()
+        return meta if meta else "text/gemini; charset=utf-8"
 
     @property
-    def encoding(self) -> str:
-        """Return the character encoding extracted from mimetype parameters, defaulting to 'utf-8'."""
-        if self.is_success and ";" in self.meta:
-            parts = self.meta.split(";")[1:]
+    def charset(self) -> str:
+        """Return the character encoding extracted from MIME type parameters, defaulting to 'utf-8'."""
+        mime = self.mime_type
+        if ";" in mime:
+            parts = mime.split(";")[1:]
             for part in parts:
                 kv = part.strip().split("=", 1)
                 if len(kv) == 2 and kv[0].strip().lower() == "charset":
@@ -80,14 +82,9 @@ class Response:
         return "utf-8"
 
     @property
-    def charset(self) -> str:
-        """Return the character encoding (alias for encoding)."""
-        return self.encoding
-
-    @property
     def text(self) -> str:
-        """Return the response body decoded as a string using the response encoding."""
-        enc = self.encoding
+        """Return the response body decoded as a string using the response charset."""
+        enc = self.charset
         try:
             return self.content.decode(enc)
         except (UnicodeDecodeError, LookupError):
