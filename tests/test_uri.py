@@ -26,12 +26,10 @@ def test_netloc_custom_port() -> None:
     assert uri.netloc == "example.com:3000"
 
 
-def test_parse_without_scheme() -> None:
-    uri = SpartanURI("example.com/test")
-    assert uri.host == "example.com"
-    assert uri.port == 300
-    assert uri.path == "/test"
-    assert str(uri) == "spartan://example.com/test"
+def test_missing_scheme() -> None:
+    with pytest.raises(URIError) as exc_info:
+        SpartanURI("example.com/test")
+    assert "URI scheme is missing" in str(exc_info.value)
 
 
 def test_with_default_scheme_and_from_str() -> None:

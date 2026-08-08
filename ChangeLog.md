@@ -6,6 +6,8 @@
 
 - Made the CLI output similar to the format used in Wasat.
   ([#9](https://github.com/davep/sybaritic/pull/9))
+- Fixed `SpartanURI.__init__` defaulting the scheme if one isn't supplied.
+  ([#10](https://github.com/davep/sybaritic/pull/10))
 
 ## v0.1.1
 

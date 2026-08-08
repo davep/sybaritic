@@ -92,8 +92,8 @@ The [SpartanURI][sybaritic.uri.SpartanURI] class provides validation, component 
 ```python
 from sybaritic import SpartanURI
 
-# Parse a URI (defaults scheme to 'spartan' and port to 300 if missing)
-uri = SpartanURI("example.com/docs/page.gmi?search=python")
+# Parse a URI (defaults port to 300 if missing)
+uri = SpartanURI("spartan://example.com/docs/page.gmi?search=python")
 
 print(uri.scheme)    # 'spartan'
 print(uri.host)      # 'example.com'
