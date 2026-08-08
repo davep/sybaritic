@@ -114,14 +114,6 @@ async def run_cli(args: argparse.Namespace) -> int:
     elif args.data_positional is not None:
         payload = args.data_positional.encode("utf-8")
 
-    if args.verbose:
-        print(f"Connecting to {uri.host}:{uri.port}...", file=sys.stderr)
-        print(f"Request URI: {uri}", file=sys.stderr)
-        if uri.host != uri.punycode_host:
-            print(f"Punycode host: {uri.punycode_host}", file=sys.stderr)
-        if payload is not None:
-            print(f"Sending payload: {len(payload)} bytes", file=sys.stderr)
-
     try:
         async with Client(timeout=args.timeout) as client:
             response = await client.request(
@@ -132,20 +124,26 @@ async def run_cli(args: argparse.Namespace) -> int:
             )
 
         if args.verbose:
-            if response.is_redirected:
-                print(
-                    f"Redirect history ({len(response.history)} step(s)):",
-                    file=sys.stderr,
-                )
-                for idx, step in enumerate(response.history, 1):
+            print("--- Spartan Response ---", file=sys.stderr)
+            if (
+                response.requested_uri is not None
+                and response.uri != response.requested_uri
+            ):
+                print(f"Requested URI: {response.requested_uri}", file=sys.stderr)
+            if response.history:
+                print("Redirections:", file=sys.stderr)
+                for redirect_resp in response.history:
                     print(
-                        f"  {idx}. {step.status.value} {step.status.name} -> {step.redirect_path}",
+                        f"  {redirect_resp.uri} -> {redirect_resp.meta.strip()}",
                         file=sys.stderr,
                     )
+            print(f"URI: {response.uri}", file=sys.stderr)
             print(
-                f"Final Response: {response.status.value} {response.status.name} (meta='{response.meta}')",
+                f"Status: {response.status.value} ({response.status.name})",
                 file=sys.stderr,
             )
+            print(f"Meta: {response.meta}", file=sys.stderr)
+            print("------------------------", file=sys.stderr)
 
         if args.include:
             print(f"Status: {response.status.value}")

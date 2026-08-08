@@ -97,8 +97,44 @@ async def test_cli_execution_with_headers_and_verbose(
         assert "Status: 2" in captured.out
         assert "Meta: text/gemini" in captured.out
         assert "# Hello Gemini" in captured.out
-        assert "Redirect history" in captured.err
-        assert "Final Response: 2 SUCCESS" in captured.err
+        assert "--- Spartan Response ---" in captured.err
+        assert f"Requested URI: spartan://127.0.0.1:{port}/old" in captured.err
+        assert "Redirections:" in captured.err
+        assert f"  spartan://127.0.0.1:{port}/old -> /new" in captured.err
+        assert f"URI: spartan://127.0.0.1:{port}/new" in captured.err
+        assert "Status: 2 (SUCCESS)" in captured.err
+        assert "Meta: text/gemini" in captured.err
+        assert "------------------------" in captured.err
+
+
+@pytest.mark.asyncio
+async def test_cli_verbose_no_redirects(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    async def handle_client(
+        reader: asyncio.StreamReader, writer: asyncio.StreamWriter
+    ) -> None:
+        await reader.readline()
+        writer.write(b"2 text/gemini\r\nDirect response\r\n")
+        await writer.drain()
+        writer.close()
+        await writer.wait_closed()
+
+    server = await asyncio.start_server(handle_client, "127.0.0.1", 0)
+    port = server.sockets[0].getsockname()[1]
+
+    async with server:
+        args = parse_args(["-v", f"127.0.0.1:{port}/direct"])
+        exit_code = await run_cli(args)
+        assert exit_code == 0
+        captured = capsys.readouterr()
+        assert "--- Spartan Response ---" in captured.err
+        assert "Requested URI:" not in captured.err
+        assert "Redirections:" not in captured.err
+        assert f"URI: spartan://127.0.0.1:{port}/direct" in captured.err
+        assert "Status: 2 (SUCCESS)" in captured.err
+        assert "Meta: text/gemini" in captured.err
+        assert "------------------------" in captured.err
 
 
 @pytest.mark.asyncio
