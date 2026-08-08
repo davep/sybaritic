@@ -986,8 +986,8 @@
 <p>The <a class="autorefs autorefs-internal" title="            SpartanURI" href="../library/uri/#sybaritic.uri.SpartanURI">SpartanURI</a> class provides validation, component extraction, and path navigation methods:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">sybaritic</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpartanURI</span>
 
-<span class="c1"># Parse a URI (defaults scheme to &#39;spartan&#39; and port to 300 if missing)</span>
-<span class="n">uri</span> <span class="o">=</span> <span class="n">SpartanURI</span><span class="p">(</span><span class="s2">&quot;example.com/docs/page.gmi?search=python&quot;</span><span class="p">)</span>
+<span class="c1"># Parse a URI (defaults port to 300 if missing)</span>
+<span class="n">uri</span> <span class="o">=</span> <span class="n">SpartanURI</span><span class="p">(</span><span class="s2">&quot;spartan://example.com/docs/page.gmi?search=python&quot;</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">uri</span><span class="o">.</span><span class="n">scheme</span><span class="p">)</span>    <span class="c1"># &#39;spartan&#39;</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">uri</span><span class="o">.</span><span class="n">host</span><span class="p">)</span>      <span class="c1"># &#39;example.com&#39;</span>
