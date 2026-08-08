@@ -1,8 +1,8 @@
 # Sybaritic ChangeLog
 
-## Unreleased
+## v0.1.2
 
-**Released: WiP**
+**Released: 2026-08-08**
 
 - Made the CLI output similar to the format used in Wasat.
   ([#9](https://github.com/davep/sybaritic/pull/9))
