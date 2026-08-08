@@ -58,10 +58,12 @@ async def test_top_level_get_and_post() -> None:
     port = server.sockets[0].getsockname()[1]
 
     async with server:
-        resp1 = await sybaritic.get(f"127.0.0.1:{port}/get-test")
+        resp1 = await sybaritic.get(f"spartan://127.0.0.1:{port}/get-test")
         assert await resp1.text() == "Top level GET\r\n"
 
-        resp2 = await sybaritic.post(f"127.0.0.1:{port}/post-test", data="hello world")
+        resp2 = await sybaritic.post(
+            f"spartan://127.0.0.1:{port}/post-test", data="hello world"
+        )
         assert await resp2.text() == "Top level POST: hello world\r\n"
 
 
@@ -84,7 +86,7 @@ async def test_client_redirect_following_with_history() -> None:
     port = server.sockets[0].getsockname()[1]
 
     async with server, Client() as client:
-        resp = await client.get(f"127.0.0.1:{port}/old-path")
+        resp = await client.get(f"spartan://127.0.0.1:{port}/old-path")
         assert resp.status == Status.SUCCESS
         assert await resp.text() == "# New Destination\r\n"
         assert resp.uri is not None and resp.uri.path == "/new-path"
@@ -118,7 +120,7 @@ async def test_client_redirect_loop_detection() -> None:
 
     async with server, Client() as client:
         with pytest.raises(RedirectLoopError):
-            await client.get(f"127.0.0.1:{port}/page1")
+            await client.get(f"spartan://127.0.0.1:{port}/page1")
 
 
 @pytest.mark.asyncio
@@ -139,7 +141,7 @@ async def test_client_max_redirects_exceeded() -> None:
 
     async with server, Client() as client:
         with pytest.raises(TooManyRedirectsError):
-            await client.get(f"127.0.0.1:{port}/step0", max_redirects=3)
+            await client.get(f"spartan://127.0.0.1:{port}/step0", max_redirects=3)
 
 
 @pytest.mark.asyncio
@@ -161,11 +163,11 @@ async def test_client_errors() -> None:
     port = server.sockets[0].getsockname()[1]
 
     async with server, Client() as client:
-        resp4 = await client.get(f"127.0.0.1:{port}/notfound")
+        resp4 = await client.get(f"spartan://127.0.0.1:{port}/notfound")
         assert resp4.status == Status.CLIENT_ERROR
         assert resp4.error_message == "File not found"
 
-        resp5 = await client.get(f"127.0.0.1:{port}/crash")
+        resp5 = await client.get(f"spartan://127.0.0.1:{port}/crash")
         assert resp5.status == Status.SERVER_ERROR
         assert resp5.error_message == "Server on fire"
 
@@ -186,4 +188,4 @@ async def test_client_invalid_status_line() -> None:
 
     async with server, Client() as client:
         with pytest.raises(HeaderError):
-            await client.get(f"127.0.0.1:{port}/")
+            await client.get(f"spartan://127.0.0.1:{port}/")

@@ -1,7 +1,15 @@
 from __future__ import annotations
 
 from typing import Final
-from urllib.parse import urljoin, urlparse
+from urllib.parse import (
+    urljoin,
+    urlparse,
+    uses_fragment,
+    uses_netloc,
+    uses_params,
+    uses_query,
+    uses_relative,
+)
 
 from sybaritic.exceptions import URIError
 
@@ -20,6 +28,20 @@ class _UnsetType:
 
 
 _UNSET: Final[_UnsetType] = _UnsetType()
+
+_KNOWN_SCHEMES: Final[set[str]] = set(
+    scheme
+    for scheme in (
+        SPARTAN_SCHEME,
+        *uses_netloc,
+        *uses_params,
+        *uses_relative,
+        *uses_query,
+        *uses_fragment,
+    )
+    if scheme
+)
+"""Set of known URI schemes for validation."""
 
 
 def _normalise_scheme(uri: str) -> str:
@@ -65,56 +87,57 @@ class SpartanURI:
                 raise URIError("URI cannot be empty")
 
             normalised = _normalise_scheme(cleaned)
+            if normalised.startswith("://"):
+                raise URIError("URI scheme cannot be empty")
 
-            if "://" in normalised:
-                raw_scheme, _, _ = normalised.partition("://")
+            to_parse = normalised
+            if normalised.startswith(SPARTAN_PREFIX):
+                to_parse = "https://" + normalised.removeprefix(SPARTAN_PREFIX)
+
+            try:
+                parsed = urlparse(to_parse)
+                raw_scheme = parsed.scheme.lower()
+                if raw_scheme == "https" and normalised.startswith(SPARTAN_PREFIX):
+                    raw_scheme = SPARTAN_SCHEME
+
                 if not raw_scheme:
-                    raise URIError("URI scheme cannot be empty")
+                    raise URIError("URI scheme is missing")
                 if raw_scheme != SPARTAN_SCHEME:
                     raise URIError(
                         f"Invalid URI scheme '{raw_scheme}', expected '{SPARTAN_SCHEME}'"
                     )
-                to_parse = normalised
-            else:
-                to_parse = f"{SPARTAN_PREFIX}{normalised}"
 
-            parsed = urlparse(to_parse)
+                if not parsed.hostname:
+                    raise URIError("URI must contain a valid host")
 
-            extracted_scheme = (
-                parsed.scheme.lower() if parsed.scheme else SPARTAN_SCHEME
-            )
-            if extracted_scheme != SPARTAN_SCHEME:
-                raise URIError(
-                    f"Invalid URI scheme '{extracted_scheme}', expected '{SPARTAN_SCHEME}'"
+                try:
+                    extracted_port = parsed.port
+                except ValueError as exc:
+                    raise URIError(f"Invalid port in URI: {exc}") from exc
+
+                self._scheme = SPARTAN_SCHEME
+                self._host = host if host is not None else parsed.hostname
+                self._port = (
+                    port
+                    if port is not None
+                    else (
+                        extracted_port
+                        if extracted_port is not None
+                        else SPARTAN_DEFAULT_PORT
+                    )
                 )
 
-            if not parsed.hostname:
-                raise URIError("URI must contain a valid host")
-
-            try:
-                extracted_port = parsed.port
-            except ValueError as exc:
-                raise URIError(f"Invalid port in URI: {exc}") from exc
-
-            self._scheme = SPARTAN_SCHEME
-            self._host = host if host is not None else parsed.hostname
-            self._port = (
-                port
-                if port is not None
-                else (
-                    extracted_port
-                    if extracted_port is not None
-                    else SPARTAN_DEFAULT_PORT
+                raw_path = (
+                    path if path is not None else (parsed.path if parsed.path else "/")
                 )
-            )
-
-            raw_path = (
-                path if path is not None else (parsed.path if parsed.path else "/")
-            )
-            if not raw_path.startswith("/"):
-                raw_path = f"/{raw_path}"
-            self._path = raw_path
-            self._query = parsed.query if parsed.query else None
+                if not raw_path.startswith("/"):
+                    raw_path = f"/{raw_path}"
+                self._path = raw_path
+                self._query = parsed.query if parsed.query else None
+            except URIError:
+                raise
+            except Exception as exc:
+                raise URIError(f"Failed to parse URI: {exc}") from exc
 
         if not self._host:
             raise URIError("Host cannot be empty")
@@ -210,7 +233,9 @@ class SpartanURI:
         cleaned = uri_str.strip()
         if not cleaned:
             raise URIError("URI cannot be empty")
-        if "://" not in cleaned:
+        normalised = _normalise_scheme(cleaned)
+        parsed_scheme = urlparse(normalised).scheme
+        if not parsed_scheme or parsed_scheme not in _KNOWN_SCHEMES:
             cleaned = f"{SPARTAN_PREFIX}{cleaned}"
         return cls(cleaned)
 
