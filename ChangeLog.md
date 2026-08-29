@@ -1,5 +1,11 @@
 # Sybaritic ChangeLog
 
+## v1.0.0
+
+**Released: 2026-08-29**
+
+- Bumped to stable.
+
 ## v0.1.2
 
 **Released: 2026-08-08**
