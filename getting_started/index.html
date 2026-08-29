@@ -930,16 +930,16 @@
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">async</span> <span class="k">with</span> <span class="n">Client</span><span class="p">()</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;spartan://spartan.mozz.us/specification.gmi&quot;</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Status: </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;MIME type: </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">mime_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Content length: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="p">)</span><span class="si">}</span><span class="s2"> bytes&quot;</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Response Text ---&quot;</span><span class="p">)</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"spartan://spartan.mozz.us/specification.gmi"</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Status: </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"MIME type: </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">mime_type</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Content length: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="p">)</span><span class="si">}</span><span class="s2"> bytes"</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">--- Response Text ---"</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">())</span>
         <span class="k">except</span> <span class="n">SybariticError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Request failed: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Request failed: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
     <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
 </code></pre></div>
 <p>Alternatively, you can use the top-level shortcut function without explicitly instantiating a client:</p>
@@ -947,10 +947,10 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">sybaritic</span>
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">sybaritic</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;spartan://spartan.mozz.us/&quot;</span><span class="p">)</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">sybaritic</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"spartan://spartan.mozz.us/"</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">())</span>
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
     <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
 </code></pre></div>
 <hr />
@@ -968,17 +968,17 @@
     <span class="k">async</span> <span class="k">with</span> <span class="n">Client</span><span class="p">()</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
         <span class="c1"># Send a UTF-8 string payload</span>
         <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
-            <span class="s2">&quot;spartan://example.com/guestbook&quot;</span><span class="p">,</span>
-            <span class="n">data</span><span class="o">=</span><span class="s2">&quot;Hello from Sybaritic!&quot;</span><span class="p">,</span>
+            <span class="s2">"spartan://example.com/guestbook"</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="s2">"Hello from Sybaritic!"</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">is_success</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Successfully submitted comment!&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"Successfully submitted comment!"</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">())</span>
         <span class="k">elif</span> <span class="n">response</span><span class="o">.</span><span class="n">is_error</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Server returned error: </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">error_message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Server returned error: </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">error_message</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
     <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">submit_comment</span><span class="p">())</span>
 </code></pre></div>
 <hr />
@@ -987,23 +987,23 @@
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">sybaritic</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpartanURI</span>
 
 <span class="c1"># Parse a URI (defaults port to 300 if missing)</span>
-<span class="n">uri</span> <span class="o">=</span> <span class="n">SpartanURI</span><span class="p">(</span><span class="s2">&quot;spartan://example.com/docs/page.gmi?search=python&quot;</span><span class="p">)</span>
+<span class="n">uri</span> <span class="o">=</span> <span class="n">SpartanURI</span><span class="p">(</span><span class="s2">"spartan://example.com/docs/page.gmi?search=python"</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="n">uri</span><span class="o">.</span><span class="n">scheme</span><span class="p">)</span>    <span class="c1"># &#39;spartan&#39;</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">uri</span><span class="o">.</span><span class="n">host</span><span class="p">)</span>      <span class="c1"># &#39;example.com&#39;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">uri</span><span class="o">.</span><span class="n">scheme</span><span class="p">)</span>    <span class="c1"># 'spartan'</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">uri</span><span class="o">.</span><span class="n">host</span><span class="p">)</span>      <span class="c1"># 'example.com'</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">uri</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>      <span class="c1"># 300</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">uri</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>      <span class="c1"># &#39;/docs/page.gmi&#39;</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">uri</span><span class="o">.</span><span class="n">query</span><span class="p">)</span>     <span class="c1"># &#39;search=python&#39;</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">uri</span><span class="o">.</span><span class="n">netloc</span><span class="p">)</span>    <span class="c1"># &#39;example.com&#39;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">uri</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>      <span class="c1"># '/docs/page.gmi'</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">uri</span><span class="o">.</span><span class="n">query</span><span class="p">)</span>     <span class="c1"># 'search=python'</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">uri</span><span class="o">.</span><span class="n">netloc</span><span class="p">)</span>    <span class="c1"># 'example.com'</span>
 
 <span class="c1"># Path navigation</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">uri</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>        <span class="c1"># SpartanURI(&#39;spartan://example.com/docs/&#39;)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">uri</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>          <span class="c1"># SpartanURI(&#39;spartan://example.com/&#39;)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">uri</span><span class="o">.</span><span class="n">without_query</span><span class="p">)</span> <span class="c1"># SpartanURI(&#39;spartan://example.com/docs/page.gmi&#39;)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">uri</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>        <span class="c1"># SpartanURI('spartan://example.com/docs/')</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">uri</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>          <span class="c1"># SpartanURI('spartan://example.com/')</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">uri</span><span class="o">.</span><span class="n">without_query</span><span class="p">)</span> <span class="c1"># SpartanURI('spartan://example.com/docs/page.gmi')</span>
 
 <span class="c1"># Component modification</span>
-<span class="n">new_uri</span> <span class="o">=</span> <span class="n">uri</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/other.gmi&quot;</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">new_uri</span><span class="p">)</span>           <span class="c1"># &#39;spartan://example.com/other.gmi&#39;</span>
+<span class="n">new_uri</span> <span class="o">=</span> <span class="n">uri</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/other.gmi"</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">new_uri</span><span class="p">)</span>           <span class="c1"># 'spartan://example.com/other.gmi'</span>
 </code></pre></div>
 <hr />
 <h2 id="redirect-handling-history">Redirect Handling &amp; History</h2>
@@ -1015,25 +1015,25 @@
     <span class="k">async</span> <span class="k">with</span> <span class="n">Client</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">15.0</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                <span class="s2">&quot;spartan://example.com/old-location&quot;</span><span class="p">,</span>
+                <span class="s2">"spartan://example.com/old-location"</span><span class="p">,</span>
                 <span class="n">follow_redirects</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="n">max_redirects</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
             <span class="p">)</span>
 
             <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">is_redirected</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Original URI: </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">requested_uri</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Final URI:    </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">uri</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Redirect count: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">history</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Original URI: </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">requested_uri</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Final URI:    </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">uri</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Redirect count: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">history</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
                 <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">history</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  -&gt; </span><span class="si">{</span><span class="n">step</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">step</span><span class="o">.</span><span class="n">redirect_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  -&gt; </span><span class="si">{</span><span class="n">step</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">step</span><span class="o">.</span><span class="n">redirect_path</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
         <span class="k">except</span> <span class="n">TooManyRedirectsError</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Exceeded maximum allowed redirects!&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"Exceeded maximum allowed redirects!"</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">RedirectLoopError</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Detected a redirect loop!&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"Detected a redirect loop!"</span><span class="p">)</span>
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
     <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">fetch_with_redirects</span><span class="p">())</span>
 </code></pre></div>
 <hr />
