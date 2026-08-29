@@ -1,6 +1,6 @@
 [project]
 name = "sybaritic"
-version = "0.1.2"
+version = "1.0.0"
 description = "An async-first, fully-typed client library for the Spartan protocol."
 readme = "README.md"
 authors = [
@@ -18,7 +18,7 @@ keywords = [
     "gemini",
 ]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 5 - Production/Stable",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3",
